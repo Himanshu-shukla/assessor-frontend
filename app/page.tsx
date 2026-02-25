@@ -10,7 +10,7 @@ import { useDropzone } from "react-dropzone";
 import { useStore } from "@/store/useStore";
 import axios from "axios";
 
-const API_URL = "https://assessor-backend-h64l.onrender.com";
+const API_URL = "http://localhost:4000";
 
 export default function Home() {
   const router = useRouter();
