@@ -11,10 +11,10 @@ const API_URL = "http://localhost:4000";
 
 export default function TestPage() {
   const router = useRouter();
-  
+
   const { test, uploadId, setResults } = useStore();
   const { setQuestions, setAnswer, nextQuestion, questions, currentQuestionIndex, answers } = test;
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,7 +33,7 @@ export default function TestPage() {
         setError("Failed to load questions.");
       }
     };
-    
+
     fetchQuestions();
   }, [uploadId, setQuestions, router]);
 
@@ -46,9 +46,9 @@ export default function TestPage() {
       try {
         // Submit real answers to backend
         const { data } = await axios.post(`${API_URL}/test/${uploadId}/submit`, { answers });
-        
+
         // Save score to Zustand and go to results
-        setResults(data); 
+        setResults(data);
         router.push("/results");
       } catch (err) {
         setSubmitting(false);
@@ -70,9 +70,18 @@ export default function TestPage() {
           <div className="text-blue-500 font-mono text-xl">29:59</div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          <p className="text-sm text-neutral-500">Question {currentQuestionIndex + 1} of {questions.length}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-neutral-500">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </p>
+            {/* Added a Skill Badge dynamically fetched from backend */}
+            <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-500/20">
+              {currentQ.skill}
+            </span>
+          </div>
+
           <h2 className="text-xl font-medium text-white">{currentQ.text}</h2>
-          
+
           <div className="space-y-3">
             {currentQ.options.map((opt: any) => (
               <label key={opt.id} className={`flex items-center p-4 rounded-lg border cursor-pointer transition-colors ${answers[currentQuestionIndex] === opt.id ? "bg-blue-600/20 border-blue-500" : "border-neutral-700 hover:bg-neutral-800"}`}>
