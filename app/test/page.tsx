@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
 
-const API_URL = "http://localhost:4000";
+const API_URL = "https://assessor-backend-h64l.onrender.com";
 
 export default function TestPage() {
   const router = useRouter();
