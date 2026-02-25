@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
 
-const API_URL = "https://api.masterynexus.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;;
 
 export default function TestPage() {
   const router = useRouter();
