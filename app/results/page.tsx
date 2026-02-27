@@ -4,8 +4,9 @@ import { useStore } from "@/store/useStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Share2, TrendingUp, AlertTriangle, Zap, Target } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Share2, TrendingUp, AlertTriangle, Zap, Target, Award, Download, Eye,X,        // Added this
+Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Theme Configuration (Applies to background & brand elements) ─────────────
@@ -379,9 +380,177 @@ function ScoreRing({ score, semanticColor }: { score: number; semanticColor: str
   );
 }
 
+// ─── Certificate Modal Component ─────────────────────────────────────────────
+function CertificateModal({ isOpen, onClose, score, percentile, companyName }: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  score: number;
+  percentile: number;
+  companyName: string;
+}) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      // In a real implementation, you would use html2canvas or a similar library
+      // For now, we'll simulate a download
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      alert("Certificate downloaded! (In production, this would generate a PDF)");
+    } catch (error) {
+      console.error("Download failed:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        className="relative w-full max-w-3xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Card className="border-0 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950">
+          {/* Certificate Header */}
+          <div className="relative p-6 border-b border-white/10 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 flex items-center justify-center">
+                <Award className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-white">
+                  Achievement Certificate
+                </h2>
+                <p className="text-slate-400 text-sm">
+                  Verified by {companyName}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <CardContent className="p-8">
+            {/* Certificate Design */}
+            <div 
+              ref={certificateRef}
+              className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border-2 border-amber-500/30 shadow-2xl"
+            >
+              {/* Decorative Elements */}
+              <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-amber-500/30 rounded-tl-2xl" />
+              <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-amber-500/30 rounded-tr-2xl" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-amber-500/30 rounded-bl-2xl" />
+              <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-amber-500/30 rounded-br-2xl" />
+
+              {/* Content */}
+              <div className="relative text-center space-y-6 py-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring" }}
+                  className="w-24 h-24 mx-auto bg-gradient-to-r from-amber-500 to-yellow-600 rounded-full flex items-center justify-center"
+                >
+                  <Award className="w-12 h-12 text-white" />
+                </motion.div>
+
+                <div>
+                  <h1 className="text-4xl font-black text-white mb-2">CERTIFICATE OF ACHIEVEMENT</h1>
+                  <p className="text-amber-400 font-semibold">This is to certify that</p>
+                </div>
+
+                <div>
+                  <p className="text-3xl font-black text-white mb-2">[User Name]</p>
+                  <p className="text-slate-300">has successfully completed the technical assessment</p>
+                </div>
+
+                <div className="flex justify-center gap-8 py-4">
+                  <div className="text-center">
+                    <p className="text-4xl font-black text-amber-400">{score}</p>
+                    <p className="text-sm text-slate-400">Final Score</p>
+                  </div>
+                  <div className="w-px h-12 bg-white/10" />
+                  <div className="text-center">
+                    <p className="text-4xl font-black text-amber-400">{100 - percentile}%</p>
+                    <p className="text-sm text-slate-400">Top Percentile</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-8">
+                  <div className="text-left">
+                    <p className="text-sm text-slate-400">Issued by</p>
+                    <p className="text-white font-bold">{companyName}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-slate-400">Date</p>
+                    <p className="text-white font-bold">{new Date().toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                {/* Seal */}
+                <div className="absolute bottom-8 right-8 opacity-10">
+                  <Award className="w-32 h-32 text-amber-500" />
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-bold"
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Certificate
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="border-white/10 text-white hover:bg-white/10"
+              >
+                Close
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "SkillRank AI";
+
 // ─── Main Results Dashboard ───────────────────────────────────────────────────
 export default function ResultsDashboard() {
   const { results } = useStore();
+  const [showCertificate, setShowCertificate] = useState(false);
 
   // Theme Cycler State
   const [themeIndex, setThemeIndex] = useState(0);
@@ -414,13 +583,44 @@ export default function ResultsDashboard() {
   const motMessages = isGood ? goodMessages : isMid ? midMessages : badMessages;
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
-  const shareRank = () => {
+  const shareRank = async () => {
     const text = `I scored ${score}/100 and I'm in the top ${100 - percentile}% of Devs on my stack! 🚀`;
-    if (navigator.share) {
-      navigator.share({ title: "My SkillRank Result", text, url: window.location.origin });
+    const url = window.location.origin;
+    const fullText = `${text} ${url}`;
+    
+    // Check if Web Share API is available AND we're on a secure context
+    if (navigator.share && window.isSecureContext) {
+      try {
+        await navigator.share({
+          title: "My SkillRank Result",
+          text: text,
+          url: url,
+        });
+      } catch (err) {
+        // User cancelled share - do nothing
+        console.log("Share cancelled:", err);
+      }
     } else {
-      navigator.clipboard.writeText(`${text} ${window.location.origin}`);
-      alert("Link copied to clipboard!");
+      // Fallback: Copy to clipboard with visual feedback
+      try {
+        await navigator.clipboard.writeText(fullText);
+        
+        // Show temporary success message
+        const shareButton = document.getElementById('share-button');
+        if (shareButton) {
+          const originalText = shareButton.innerHTML;
+          shareButton.innerHTML = '✓ Copied!';
+          setTimeout(() => {
+            shareButton.innerHTML = originalText;
+          }, 2000);
+        }
+        
+        // Also show a toast/alert for better UX
+        alert("✅ Link copied to clipboard! You can now share it anywhere.");
+      } catch (err) {
+        console.error("Failed to copy:", err);
+        alert("❌ Could not copy to clipboard. Please try manually.");
+      }
     }
   };
 
@@ -483,12 +683,22 @@ export default function ResultsDashboard() {
               Assessment Complete · Based on global developer profiles
             </p>
           </div>
-          <Button
-            onClick={shareRank}
-            className={`transition-all duration-500 border border-transparent shadow-sm ${activeTheme.buttonBg}`}
-          >
-            <Share2 className="w-4 h-4 mr-2" /> Share My Rank
-          </Button>
+          <div className="flex gap-2">
+            {/* Certificate Button - NEW */}
+            {/* <Button
+              onClick={() => setShowCertificate(true)}
+              className="border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-all"
+            >
+              <Award className="w-4 h-4 mr-2" /> View Certificate
+            </Button> */}
+            <Button
+  id="share-button"
+  onClick={shareRank}
+  className="border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-all"
+>
+  <Share2 className="w-4 h-4 mr-2" /> Share My Rank
+</Button>
+          </div>
         </motion.div>
 
         {/* ── Hero score card ── */}
@@ -751,11 +961,24 @@ export default function ResultsDashboard() {
           transition={{ delay: 1.2 }}
           className="text-center pb-4"
         >
-          <p className="text-slate-500 font-semibold text-xs">
-            © 2024 SkillRank · Powered by Penguin Intelligence™
+          <p className="text-slate-700 text-xs">
+            © 2024 {COMPANY_NAME} · Powered by Penguin Intelligence™
           </p>
         </motion.div>
       </div>
+
+      {/* Certificate Modal */}
+      <AnimatePresence>
+        {showCertificate && (
+          <CertificateModal
+            isOpen={showCertificate}
+            onClose={() => setShowCertificate(false)}
+            score={score}
+            percentile={percentile}
+            companyName={COMPANY_NAME}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }

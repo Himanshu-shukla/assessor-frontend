@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import InterviewBooking from "@/components/InterviewBooking"; // ONLY THIS LINE ADDED
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <InterviewBooking /> {/* ONLY THIS LINE ADDED */}
       </body>
     </html>
   );
