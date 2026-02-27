@@ -12,6 +12,86 @@ import { ChevronRight, Send, AlertCircle } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+// ─── Theme Configuration ──────────────────────────────────────────────────────
+const themes = [
+  {
+    name: "Sky Blue",
+    bgGradient: "from-slate-50 via-sky-50 to-indigo-50",
+    brandText: "text-sky-500",
+    brandHex: "#0ea5e9",
+    snowText: "text-sky-200",
+    badgeBg: "rgba(14, 165, 233, 0.1)",
+    badgeBorder: "rgba(14, 165, 233, 0.2)",
+    radioActiveBg: "rgba(14, 165, 233, 0.06)",
+    radioActiveBorder: "rgba(14, 165, 233, 0.4)",
+    radioHoverBg: "rgba(14, 165, 233, 0.02)",
+    buttonGradient: "linear-gradient(135deg, #0ea5e9, #3b82f6)",
+    buttonShadow: "0 10px 20px rgba(14, 165, 233, 0.25)",
+    progressGradient: "linear-gradient(90deg, #0ea5e9, #3b82f6)",
+    progressActive: "rgba(14, 165, 233, 0.4)",
+    successBg: "rgba(14, 165, 233, 0.12)",
+    successBorder: "rgba(14, 165, 233, 0.25)",
+    successText: "#0ea5e9",
+  },
+  {
+    name: "Rose Red",
+    bgGradient: "from-slate-50 via-rose-50 to-pink-50",
+    brandText: "text-rose-500",
+    brandHex: "#f43f5e",
+    snowText: "text-rose-200",
+    badgeBg: "rgba(244, 63, 94, 0.1)",
+    badgeBorder: "rgba(244, 63, 94, 0.2)",
+    radioActiveBg: "rgba(244, 63, 94, 0.06)",
+    radioActiveBorder: "rgba(244, 63, 94, 0.4)",
+    radioHoverBg: "rgba(244, 63, 94, 0.02)",
+    buttonGradient: "linear-gradient(135deg, #f43f5e, #be123c)",
+    buttonShadow: "0 10px 20px rgba(244, 63, 94, 0.25)",
+    progressGradient: "linear-gradient(90deg, #f43f5e, #be123c)",
+    progressActive: "rgba(244, 63, 94, 0.4)",
+    successBg: "rgba(244, 63, 94, 0.12)",
+    successBorder: "rgba(244, 63, 94, 0.25)",
+    successText: "#f43f5e",
+  },
+  {
+    name: "Emerald Green",
+    bgGradient: "from-slate-50 via-emerald-50 to-teal-50",
+    brandText: "text-emerald-500",
+    brandHex: "#10b981",
+    snowText: "text-emerald-200",
+    badgeBg: "rgba(16, 185, 129, 0.1)",
+    badgeBorder: "rgba(16, 185, 129, 0.2)",
+    radioActiveBg: "rgba(16, 185, 129, 0.06)",
+    radioActiveBorder: "rgba(16, 185, 129, 0.4)",
+    radioHoverBg: "rgba(16, 185, 129, 0.02)",
+    buttonGradient: "linear-gradient(135deg, #10b981, #0f766e)",
+    buttonShadow: "0 10px 20px rgba(16, 185, 129, 0.25)",
+    progressGradient: "linear-gradient(90deg, #10b981, #0f766e)",
+    progressActive: "rgba(16, 185, 129, 0.4)",
+    successBg: "rgba(16, 185, 129, 0.12)",
+    successBorder: "rgba(16, 185, 129, 0.25)",
+    successText: "#10b981",
+  },
+  {
+    name: "Amber Yellow",
+    bgGradient: "from-slate-50 via-amber-50 to-yellow-50",
+    brandText: "text-amber-500",
+    brandHex: "#f59e0b",
+    snowText: "text-amber-200",
+    badgeBg: "rgba(245, 158, 11, 0.1)",
+    badgeBorder: "rgba(245, 158, 11, 0.2)",
+    radioActiveBg: "rgba(245, 158, 11, 0.06)",
+    radioActiveBorder: "rgba(245, 158, 11, 0.4)",
+    radioHoverBg: "rgba(245, 158, 11, 0.02)",
+    buttonGradient: "linear-gradient(135deg, #f59e0b, #b45309)",
+    buttonShadow: "0 10px 20px rgba(245, 158, 11, 0.25)",
+    progressGradient: "linear-gradient(90deg, #f59e0b, #b45309)",
+    progressActive: "rgba(245, 158, 11, 0.4)",
+    successBg: "rgba(245, 158, 11, 0.12)",
+    successBorder: "rgba(245, 158, 11, 0.25)",
+    successText: "#f59e0b",
+  },
+];
+
 // ─── Penguin Thinking Character ───────────────────────────────────────────────
 function PenguinThinking({ answered }: { answered: boolean }) {
   const [blink, setBlink] = useState(false);
@@ -36,75 +116,67 @@ function PenguinThinking({ answered }: { answered: boolean }) {
       }
     >
       <svg viewBox="0 0 90 120" width="90" height="120">
-        {/* Shadow */}
-        <ellipse cx="45" cy="116" rx="24" ry="5" fill="rgba(0,0,0,0.2)" />
-        {/* Body */}
-        <ellipse cx="45" cy="82" rx="30" ry="36" fill="#1a1a2e" />
-        <ellipse cx="45" cy="88" rx="19" ry="25" fill="#f0f0f0" />
-        {/* Head */}
-        <ellipse cx="45" cy="44" rx="26" ry="26" fill="#1a1a2e" />
-        <ellipse cx="45" cy="48" rx="16" ry="16" fill="#f0f0f0" />
-        {/* Eyes */}
+        <ellipse cx="45" cy="116" rx="24" ry="5" fill="rgba(0,0,0,0.08)" />
+        <ellipse cx="45" cy="82" rx="30" ry="36" fill="#1e293b" />
+        <ellipse cx="45" cy="88" rx="19" ry="25" fill="#f8fafc" />
+        <ellipse cx="45" cy="44" rx="26" ry="26" fill="#1e293b" />
+        <ellipse cx="45" cy="48" rx="16" ry="16" fill="#f8fafc" />
+        
         {answered ? (
           <>
-            {/* Happy squint */}
-            <path d="M36 42 Q39 38 42 42" stroke="#1a1a2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-            <path d="M48 42 Q51 38 54 42" stroke="#1a1a2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-            {/* Blush */}
-            <ellipse cx="34" cy="50" rx="6" ry="4" fill="#FF9999" opacity="0.5" />
-            <ellipse cx="56" cy="50" rx="6" ry="4" fill="#FF9999" opacity="0.5" />
-            {/* Smile */}
-            <path d="M34 54 Q45 62 56 54" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d="M36 42 Q39 38 42 42" stroke="#0f172a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M48 42 Q51 38 54 42" stroke="#0f172a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <ellipse cx="34" cy="50" rx="6" ry="4" fill="#fca5a5" opacity="0.6" />
+            <ellipse cx="56" cy="50" rx="6" ry="4" fill="#fca5a5" opacity="0.6" />
+            <path d="M34 54 Q45 62 56 54" stroke="#0f172a" strokeWidth="2" fill="none" strokeLinecap="round" />
           </>
         ) : (
           <>
             <ellipse cx="39" cy="42" rx="5" ry={eyeH / 1.3} fill="white" />
             <ellipse cx="52" cy="42" rx="5" ry={eyeH / 1.3} fill="white" />
-            <circle cx="40" cy="43" r="2.5" fill="#111" />
-            <circle cx="53" cy="43" r="2.5" fill="#111" />
+            <circle cx="40" cy="43" r="2.5" fill="#0f172a" />
+            <circle cx="53" cy="43" r="2.5" fill="#0f172a" />
             <circle cx="41" cy="41.5" r="1" fill="white" />
             <circle cx="54" cy="41.5" r="1" fill="white" />
-            {/* Thinking expression - raised eyebrow */}
-            <line x1="36" y1="36" x2="43" y2="38" stroke="#4b5563" strokeWidth="1.8" strokeLinecap="round" />
-            <line x1="49" y1="37" x2="56" y2="36" stroke="#4b5563" strokeWidth="1.8" strokeLinecap="round" />
-            {/* Neutral-curious mouth */}
-            <path d="M38 54 Q45 57 52 54" stroke="#4b5563" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <line x1="36" y1="36" x2="43" y2="38" stroke="#64748b" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="49" y1="37" x2="56" y2="36" stroke="#64748b" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M38 54 Q45 57 52 54" stroke="#64748b" strokeWidth="2" fill="none" strokeLinecap="round" />
           </>
         )}
-        {/* Beak */}
-        <polygon points="45,56 41,62 49,62" fill="#FF8C00" />
-        {/* Left wing */}
+        
+        <polygon points="45,56 41,62 49,62" fill="#f97316" />
+        
         <motion.g
           animate={answered ? { rotate: [0, 30, 0, 30, 0] } : { rotate: [3, -3, 3] }}
           transition={answered ? { duration: 0.4, repeat: 3 } : { duration: 2, repeat: Infinity }}
           style={{ originX: "15px", originY: "78px" }}
         >
-          <ellipse cx="15" cy="78" rx="8" ry="18" fill="#1a1a2e" transform="rotate(-8,15,78)" />
+          <ellipse cx="15" cy="78" rx="8" ry="18" fill="#1e293b" transform="rotate(-8,15,78)" />
         </motion.g>
-        {/* Right wing — holds pencil when not answered */}
+        
         <motion.g
           animate={answered ? { rotate: [0, -30, 0, -30, 0] } : { rotate: [-3, 3, -3] }}
           transition={answered ? { duration: 0.4, repeat: 3 } : { duration: 2, repeat: Infinity }}
           style={{ originX: "75px", originY: "78px" }}
         >
-          <ellipse cx="75" cy="78" rx="8" ry="18" fill="#1a1a2e" transform="rotate(8,75,78)" />
+          <ellipse cx="75" cy="78" rx="8" ry="18" fill="#1e293b" transform="rotate(8,75,78)" />
           {!answered && (
-            <line x1="78" y1="62" x2="86" y2="50" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+            <line x1="78" y1="62" x2="86" y2="50" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
           )}
         </motion.g>
-        {/* Feet */}
-        <ellipse cx="37" cy="113" rx="10" ry="5" fill="#FF8C00" />
-        <ellipse cx="53" cy="113" rx="10" ry="5" fill="#FF8C00" />
-        {/* Thinking bubble */}
+        
+        <ellipse cx="37" cy="113" rx="10" ry="5" fill="#f97316" />
+        <ellipse cx="53" cy="113" rx="10" ry="5" fill="#f97316" />
+        
         {!answered && (
           <>
-            <motion.circle cx="72" cy="30" r="3" fill="rgba(255,255,255,0.3)"
+            <motion.circle cx="72" cy="30" r="3" fill="rgba(148, 163, 184, 0.3)"
               animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} />
-            <motion.circle cx="80" cy="20" r="4.5" fill="rgba(255,255,255,0.3)"
+            <motion.circle cx="80" cy="20" r="4.5" fill="rgba(148, 163, 184, 0.3)"
               animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} />
-            <motion.circle cx="91" cy="10" r="7" fill="rgba(255,255,255,0.2)"
+            <motion.circle cx="91" cy="10" r="7" fill="rgba(148, 163, 184, 0.2)"
               animate={{ opacity: [0.2, 0.6, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }} />
-            <motion.text x="85" y="14" fontSize="8" textAnchor="middle"
+            <motion.text x="85" y="14" fontSize="8" textAnchor="middle" fill="#64748b" fontStyle="italic" fontWeight="bold"
               animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
             >
               ?
@@ -117,69 +189,29 @@ function PenguinThinking({ answered }: { answered: boolean }) {
 }
 
 // ─── Snowflakes ───────────────────────────────────────────────────────────────
-function Snowflakes() {
+function Snowflakes({ snowClass }: { snowClass: string }) {
   const [mounted, setMounted] = useState(false);
+  const [flakes, setFlakes] = useState<{ left: number; size: number; opacity: number; duration: number; delay: number }[]>([]);
 
-  // useEffect only runs on the client (browser)
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Return null during Server-Side Rendering to prevent hydration mismatch
-  if (!mounted) return null;
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[...Array(16)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute select-none text-white"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: "-20px",
-            fontSize: `${9 + Math.random() * 12}px`,
-            opacity: 0.08 + Math.random() * 0.1,
-          }}
-          animate={{ y: ["0vh", "110vh"], rotate: [0, 360] }}
-          transition={{
-            duration: 8 + Math.random() * 10,
-            repeat: Infinity,
-            delay: Math.random() * 12,
-            ease: "linear",
-          }}
-        >
-          ❄
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-function SnowBackground() {
-  const [flakes, setFlakes] = useState<
-    { left: number; size: number; opacity: number; duration: number; delay: number }[]
-  >([]);
-
-  useEffect(() => {
-    const generated = Array.from({ length: 24 }).map(() => ({
+    setFlakes(Array.from({ length: 20 }).map(() => ({
       left: Math.random() * 100,
-      size: 10 + Math.random() * 14,
-      opacity: 0.12 + Math.random() * 0.14,
-      duration: 7 + Math.random() * 10,
+      size: 9 + Math.random() * 12,
+      opacity: 0.2 + Math.random() * 0.3,
+      duration: 8 + Math.random() * 10,
       delay: Math.random() * 12,
-    }));
-
-    setFlakes(generated);
+    })));
   }, []);
 
-  if (flakes.length === 0) return null;
+  if (!mounted || flakes.length === 0) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flakes.map((flake, i) => (
         <motion.div
           key={i}
-          className="absolute select-none text-white"
+          className={`absolute select-none transition-colors duration-1000 drop-shadow-sm ${snowClass}`}
           style={{
             left: `${flake.left}%`,
             top: "-20px",
@@ -202,12 +234,14 @@ function SnowBackground() {
 }
 
 // ─── Circular progress timer ──────────────────────────────────────────────────
-function TimerRing({ seconds, total }: { seconds: number; total: number }) {
+function TimerRing({ seconds, total, themeHex }: { seconds: number; total: number; themeHex: string }) {
   const pct = seconds / total;
   const r = 22;
   const circ = 2 * Math.PI * r;
   const dash = pct * circ;
-  const color = seconds > total * 0.5 ? "#22d3ee" : seconds > total * 0.2 ? "#f59e0b" : "#ef4444";
+  
+  // Danger/Warning colors stay consistent, normal uses theme color
+  const color = seconds > total * 0.5 ? themeHex : seconds > total * 0.2 ? "#f59e0b" : "#ef4444";
 
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -216,7 +250,7 @@ function TimerRing({ seconds, total }: { seconds: number; total: number }) {
   return (
     <div className="relative flex items-center justify-center" style={{ width: 60, height: 60 }}>
       <svg width="60" height="60" className="absolute">
-        <circle cx="30" cy="30" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
+        <circle cx="30" cy="30" r={r} fill="none" stroke="rgba(15,23,42,0.05)" strokeWidth="4" />
         <motion.circle
           cx="30" cy="30" r={r}
           fill="none"
@@ -225,32 +259,32 @@ function TimerRing({ seconds, total }: { seconds: number; total: number }) {
           strokeLinecap="round"
           strokeDasharray={`${dash} ${circ}`}
           transform="rotate(-90 30 30)"
-          style={{ filter: `drop-shadow(0 0 4px ${color})` }}
-          transition={{ duration: 0.5 }}
+          style={{ filter: `drop-shadow(0 0 2px ${color})` }}
+          transition={{ duration: 0.5, stroke: { duration: 1 } }}
         />
       </svg>
-      <span className="relative text-xs font-black" style={{ color }}>{label}</span>
+      <span className="relative text-xs font-black transition-colors duration-1000" style={{ color }}>{label}</span>
     </div>
   );
 }
 
 // ─── Question Progress Bar ─────────────────────────────────────────────────────
-function QuestionProgress({ current, total }: { current: number; total: number }) {
+function QuestionProgress({ current, total, theme }: { current: number; total: number; theme: any }) {
   return (
     <div className="flex gap-1.5">
       {[...Array(total)].map((_, i) => (
         <motion.div
           key={i}
-          className="h-1.5 rounded-full flex-1"
+          className="h-2 rounded-full flex-1 transition-all duration-1000"
           style={{
             background:
               i < current
-                ? "linear-gradient(90deg,#22d3ee,#3b82f6)"
+                ? theme.progressGradient
                 : i === current
-                  ? "rgba(34,211,238,0.4)"
-                  : "rgba(255,255,255,0.08)",
+                  ? theme.progressActive
+                  : "rgba(15, 23, 42, 0.05)",
           }}
-          animate={i === current ? { opacity: [0.4, 1, 0.4] } : {}}
+          animate={i === current ? { opacity: [0.5, 1, 0.5] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
         />
       ))}
@@ -264,6 +298,10 @@ export default function TestPage() {
   const { test, uploadId, setResults } = useStore();
   const { setQuestions, setAnswer, nextQuestion, questions, currentQuestionIndex, answers } = test;
 
+  // Theme cycler state
+  const [themeIndex, setThemeIndex] = useState(0);
+  const activeTheme = themes[themeIndex];
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 min
@@ -271,6 +309,14 @@ export default function TestPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const TOTAL_TIME = 30 * 60;
+
+  // ── Cycle Theme Every 5 Seconds ──
+  useEffect(() => {
+    const themeCycler = setInterval(() => {
+      setThemeIndex((prev) => (prev + 1) % themes.length);
+    }, 5000);
+    return () => clearInterval(themeCycler);
+  }, []);
 
   // Fetch questions
   useEffect(() => {
@@ -282,8 +328,6 @@ export default function TestPage() {
     const fetchQuestions = async () => {
       try {
         const { data } = await axios.get(`${API_URL}/test/${uploadId}/questions`);
-        
-        // 🔥 FIX: Use data.questions if it exists, otherwise fall back to data directly
         const questionsArray = data.questions || data;
         
         if (!questionsArray || questionsArray.length === 0) {
@@ -320,19 +364,14 @@ export default function TestPage() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      // 1. Transform index-based answers to ID-based answers
       const formattedAnswers: Record<string, string> = {};
-
       questions.forEach((q, index) => {
-        // Depending on how your API returns data, it might be q._id or q.id
         const questionId = q._id || q.id;
-
         if (answers[index] && questionId) {
           formattedAnswers[questionId] = answers[index];
         }
       });
 
-      // 2. Send the formatted answers to the backend
       const { data } = await axios.post(`${API_URL}/test/${uploadId}/submit`, {
         answers: formattedAnswers
       });
@@ -356,9 +395,10 @@ export default function TestPage() {
 
   if (!questions || questions.length === 0) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center gap-6">
+      <main className={`min-h-screen flex flex-col items-center justify-center gap-6 transition-colors duration-1000 bg-gradient-to-br ${activeTheme.bgGradient}`}>
+        <Snowflakes snowClass={activeTheme.snowText} />
         <PenguinThinking answered={false} />
-        <p className="text-cyan-400 font-bold text-lg">
+        <p className={`font-bold text-lg transition-colors duration-1000 ${activeTheme.brandText}`}>
           Loading your assessment...
         </p>
       </main>
@@ -368,7 +408,7 @@ export default function TestPage() {
   const currentQ = questions?.[currentQuestionIndex];
 
   if (!currentQ) {
-    return null; // extra safety
+    return null; 
   }
 
   const isLast = currentQuestionIndex === questions.length - 1;
@@ -379,17 +419,16 @@ export default function TestPage() {
   if (error) {
     return (
       <main
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: "linear-gradient(160deg, #080e1c 0%, #0c1830 50%, #0a2040 100%)" }}
+        className={`min-h-screen flex items-center justify-center transition-colors duration-1000 bg-gradient-to-br ${activeTheme.bgGradient}`}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-4"
+          className="text-center space-y-4 bg-white/80 p-8 rounded-3xl shadow-xl border border-red-100 backdrop-blur-xl"
         >
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
-          <p className="text-red-400 font-bold text-lg">{error}</p>
-          <Button onClick={() => router.push("/")} className="bg-cyan-500 hover:bg-cyan-400 text-white">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+          <p className="text-slate-800 font-black text-xl">{error}</p>
+          <Button onClick={() => router.push("/")} className="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-5 rounded-xl shadow-lg shadow-red-200">
             Go Back Home
           </Button>
         </motion.div>
@@ -397,51 +436,19 @@ export default function TestPage() {
     );
   }
 
-  // ── Loading ──
-  if (!currentQ) {
-    return (
-      <main
-        className="min-h-screen flex flex-col items-center justify-center gap-6"
-        style={{ background: "linear-gradient(160deg, #080e1c 0%, #0c1830 50%, #0a2040 100%)" }}
-      >
-        <Snowflakes />
-        <PenguinThinking answered={false} />
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-cyan-400 font-bold text-lg"
-        >
-          Loading your assessment...
-        </motion.div>
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-2 h-2 rounded-full bg-cyan-500"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
-            />
-          ))}
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-10"
-      style={{
-        background: "linear-gradient(160deg, #080e1c 0%, #0c1830 50%, #0a2040 100%)",
-        fontFamily: "'Nunito', system-ui, sans-serif",
-      }}
+      className={`min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-10 transition-colors duration-1000 bg-gradient-to-br ${activeTheme.bgGradient}`}
+      style={{ fontFamily: "'Nunito', system-ui, sans-serif" }}
     >
-      <Snowflakes />
+     
+      <Snowflakes snowClass={activeTheme.snowText} />
 
       {/* Urgent timer pulse background */}
       {isUrgent && (
         <motion.div
-          className="absolute inset-0 pointer-events-none"
-          animate={{ opacity: [0, 0.05, 0] }}
+          className="absolute inset-0 pointer-events-none z-0"
+          animate={{ opacity: [0, 0.03, 0] }}
           transition={{ duration: 1, repeat: Infinity }}
           style={{ background: "radial-gradient(circle at center, #ef4444 0%, transparent 70%)" }}
         />
@@ -453,18 +460,18 @@ export default function TestPage() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
+          className="flex items-center justify-between bg-white/60 px-6 py-3 rounded-2xl shadow-sm border border-white/50 backdrop-blur-md"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🐧</span>
+            <span className="text-3xl bg-white rounded-xl shadow-sm border border-slate-100 p-1">🐧</span>
             <div>
-              <h1 className="text-xl font-black text-white leading-none">
-                Skill<span className="text-cyan-400">Rank</span>
+              <h1 className="text-xl font-black text-slate-800 leading-none transition-colors duration-500">
+                Skill<span className={activeTheme.brandText}>{activeTheme.name.split(" ")[1] || "Rank"}</span>
               </h1>
-              <p className="text-xs text-slate-600">Technical Assessment</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Technical Assessment</p>
             </div>
           </div>
-          <TimerRing seconds={timeLeft} total={TOTAL_TIME} />
+          <TimerRing seconds={timeLeft} total={TOTAL_TIME} themeHex={activeTheme.brandHex} />
         </motion.div>
 
         {/* ── Progress ── */}
@@ -472,13 +479,13 @@ export default function TestPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="space-y-2"
+          className="space-y-2 px-2"
         >
-          <div className="flex justify-between text-xs text-slate-500">
+          <div className="flex justify-between text-xs font-bold text-slate-500">
             <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-            <span>{Math.round(((currentQuestionIndex) / questions.length) * 100)}% complete</span>
+            <span className={activeTheme.brandText}>{Math.round(((currentQuestionIndex) / questions.length) * 100)}% complete</span>
           </div>
-          <QuestionProgress current={currentQuestionIndex} total={questions.length} />
+          <QuestionProgress current={currentQuestionIndex} total={questions.length} theme={activeTheme} />
         </motion.div>
 
         {/* ── Main card ── */}
@@ -491,30 +498,29 @@ export default function TestPage() {
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <Card
-              className="border-0 overflow-hidden"
+              className="border border-white/60 overflow-hidden"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                backdropFilter: "blur(24px)",
-                boxShadow: "0 25px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)",
+                background: "rgba(255, 255, 255, 0.75)",
+                backdropFilter: "blur(20px)",
+                boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(255,255,255,0.5) inset",
               }}
             >
               <CardContent className="p-0">
 
                 {/* Card top bar */}
                 <div
-                  className="px-6 pt-6 pb-4 flex items-center justify-between"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                  className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-slate-100/60"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <PenguinThinking answered={hasAnswer} />
                     <div>
-                      <p className="text-slate-500 text-xs mb-1">Current topic</p>
+                      <p className="text-slate-400 font-semibold text-xs mb-1 uppercase tracking-wider">Current topic</p>
                       <Badge
-                        className="text-xs font-black border-0 px-3 py-1"
+                        className="text-xs font-black border px-3 py-1 shadow-sm transition-all duration-1000"
                         style={{
-                          background: "rgba(34,211,238,0.12)",
-                          color: "#22d3ee",
-                          border: "1px solid rgba(34,211,238,0.25)",
+                          background: activeTheme.badgeBg,
+                          color: activeTheme.brandHex,
+                          borderColor: activeTheme.badgeBorder,
                         }}
                       >
                         {currentQ.skill}
@@ -529,8 +535,12 @@ export default function TestPage() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="text-green-400 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                        style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)" }}
+                        className="text-xs font-bold flex items-center gap-1.5 px-4 py-2 rounded-full shadow-sm transition-all duration-1000"
+                        style={{ 
+                          background: activeTheme.successBg, 
+                          border: `1px solid ${activeTheme.successBorder}`,
+                          color: activeTheme.successText
+                        }}
                       >
                         <motion.span
                           animate={{ rotate: [0, 10, -10, 0] }}
@@ -545,9 +555,9 @@ export default function TestPage() {
                 </div>
 
                 {/* Question text */}
-                <div className="px-6 py-5">
+                <div className="px-8 py-8">
                   <motion.h2
-                    className="text-xl font-bold text-white leading-relaxed"
+                    className="text-xl md:text-2xl font-black text-slate-800 leading-relaxed"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
@@ -557,7 +567,7 @@ export default function TestPage() {
                 </div>
 
                 {/* Options */}
-                <div className="px-6 pb-6 space-y-3">
+                <div className="px-8 pb-8 space-y-3">
                   {currentQ.options.map((opt: { id: string; text: string }, i: number) => {
                     const selected = answers[currentQuestionIndex] === opt.id;
                     return (
@@ -566,17 +576,13 @@ export default function TestPage() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.05 + i * 0.07 }}
-                        whileHover={{ scale: 1.01 }}
+                        whileHover={{ scale: 1.01, backgroundColor: !selected ? activeTheme.radioHoverBg : undefined }}
                         whileTap={{ scale: 0.99 }}
-                        className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                        className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300"
                         style={{
-                          background: selected
-                            ? "rgba(34,211,238,0.1)"
-                            : "rgba(255,255,255,0.03)",
-                          border: selected
-                            ? "1px solid rgba(34,211,238,0.5)"
-                            : "1px solid rgba(255,255,255,0.07)",
-                          boxShadow: selected ? "0 0 20px rgba(34,211,238,0.08)" : "none",
+                          background: selected ? activeTheme.radioActiveBg : "rgba(255, 255, 255, 0.5)",
+                          border: selected ? `2px solid ${activeTheme.radioActiveBorder}` : "2px solid rgba(15,23,42,0.05)",
+                          boxShadow: selected ? `0 4px 12px ${activeTheme.badgeBg}` : "0 2px 5px rgba(15,23,42,0.02)",
                         }}
                       >
                         <input
@@ -590,17 +596,17 @@ export default function TestPage() {
 
                         {/* Custom radio */}
                         <motion.div
-                          className="flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                          className="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-500"
                           style={{
-                            borderColor: selected ? "#22d3ee" : "rgba(255,255,255,0.2)",
-                            background: selected ? "#22d3ee" : "transparent",
+                            borderColor: selected ? activeTheme.brandHex : "rgba(15,23,42,0.15)",
+                            background: selected ? activeTheme.brandHex : "white",
                           }}
-                          animate={selected ? { scale: [1, 1.2, 1] } : {}}
+                          animate={selected ? { scale: [1, 1.15, 1] } : {}}
                           transition={{ duration: 0.2 }}
                         >
                           {selected && (
                             <motion.div
-                              className="w-2 h-2 rounded-full bg-white"
+                              className="w-2.5 h-2.5 rounded-full bg-white shadow-sm"
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{ duration: 0.15 }}
@@ -610,18 +616,17 @@ export default function TestPage() {
 
                         {/* Option label letter */}
                         <span
-                          className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-black"
+                          className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black transition-colors duration-500"
                           style={{
-                            background: selected ? "rgba(34,211,238,0.2)" : "rgba(255,255,255,0.06)",
-                            color: selected ? "#22d3ee" : "#64748b",
+                            background: selected ? activeTheme.badgeBg : "rgba(15,23,42,0.04)",
+                            color: selected ? activeTheme.brandHex : "#64748b",
                           }}
                         >
                           {String.fromCharCode(65 + i)}
                         </span>
 
                         <span
-                          className="text-sm font-medium leading-relaxed"
-                          style={{ color: selected ? "#e2e8f0" : "#94a3b8" }}
+                          className={`text-base font-semibold leading-relaxed transition-colors duration-300 ${selected ? 'text-slate-800' : 'text-slate-600'}`}
                         >
                           {opt.text}
                         </span>
@@ -632,24 +637,21 @@ export default function TestPage() {
 
                 {/* Footer */}
                 <div
-                  className="px-6 py-4 flex items-center justify-between"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                  className="px-6 py-5 flex items-center justify-between border-t border-slate-100/60 bg-white/40"
                 >
-                  <p className="text-slate-600 text-xs">
+                  <p className="text-slate-500 font-medium text-sm">
                     {hasAnswer ? "Great! Move to the next question." : "Select an answer to continue."}
                   </p>
 
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.div whileHover={hasAnswer ? { scale: 1.03 } : {}} whileTap={hasAnswer ? { scale: 0.97 } : {}}>
                     <Button
                       onClick={handleNext}
                       disabled={!hasAnswer || submitting}
-                      className="font-black text-sm px-6 py-2.5 rounded-xl transition-all border-0"
+                      className="font-black text-base px-8 py-6 rounded-xl transition-all duration-1000 border-0"
                       style={{
-                        background: hasAnswer
-                          ? "linear-gradient(135deg, #22d3ee, #3b82f6)"
-                          : "rgba(255,255,255,0.07)",
-                        color: hasAnswer ? "white" : "#475569",
-                        boxShadow: hasAnswer ? "0 0 20px rgba(34,211,238,0.3)" : "none",
+                        background: hasAnswer ? activeTheme.buttonGradient : "#f1f5f9",
+                        color: hasAnswer ? "white" : "#94a3b8",
+                        boxShadow: hasAnswer ? activeTheme.buttonShadow : "none",
                         cursor: hasAnswer ? "pointer" : "not-allowed",
                       }}
                     >
@@ -667,12 +669,12 @@ export default function TestPage() {
                       ) : isLast ? (
                         <span className="flex items-center gap-2">
                           Submit & Get Rank
-                          <Send className="w-4 h-4" />
+                          <Send className="w-5 h-5" />
                         </span>
                       ) : (
                         <span className="flex items-center gap-2">
                           Next Question
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-5 h-5" />
                         </span>
                       )}
                     </Button>
@@ -688,7 +690,7 @@ export default function TestPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-xs text-slate-700"
+          className="text-center text-sm font-semibold text-slate-500 bg-white/50 py-2 px-4 rounded-full w-max mx-auto shadow-sm border border-white"
         >
           🐧 The penguin is rooting for you · {questions.length - currentQuestionIndex - 1} questions remaining
         </motion.p>
