@@ -733,7 +733,7 @@ export default function Home() {
               <h1 className="text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
                 Skill<span className={activeTheme.brandText}>{ " Rank"}</span>
               </h1>
-              <p className="text-xs text-slate-500 font-medium">Powered by Penguin Intelligence™</p>
+              <p className="text-xs text-slate-500 font-medium">Powered by Mastery Nexus™</p>
             </div>
           </div>
           <div className="flex gap-3">

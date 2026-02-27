@@ -962,7 +962,7 @@ export default function ResultsDashboard() {
           className="text-center pb-4"
         >
           <p className="text-slate-700 text-xs">
-            © 2024 {COMPANY_NAME} · Powered by Penguin Intelligence™
+            © 2024 {COMPANY_NAME} · Powered by Mastery Nexus™
           </p>
         </motion.div>
       </div>
