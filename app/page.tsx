@@ -556,10 +556,13 @@ export default function Home() {
         const formData = new FormData();
         formData.append("resume", acceptedFiles[0]);
         const { data } = await axios.post(`${API_URL}/upload`, formData);
-        setUploadId(data.uploadId);
+        
+        // 🔥 FIX: Use assessmentId to match your backend response
+        setUploadId(data.assessmentId); 
         setProgress(30);
         setUploadStatus("parsing");
-        pollStatus(data.uploadId);
+        pollStatus(data.assessmentId); // 🔥 FIX: Pass assessmentId here too
+        
       } catch (err) {
         console.error(err);
         setUploadStatus("idle");
@@ -589,6 +592,52 @@ export default function Home() {
     setProgress(0);
   };
 
+  function SnowBackground() {
+  const [flakes, setFlakes] = useState<
+    { left: number; size: number; opacity: number; duration: number; delay: number }[]
+  >([]);
+
+  useEffect(() => {
+    const generated = Array.from({ length: 24 }).map(() => ({
+      left: Math.random() * 100,
+      size: 10 + Math.random() * 14,
+      opacity: 0.12 + Math.random() * 0.14,
+      duration: 7 + Math.random() * 10,
+      delay: Math.random() * 12,
+    }));
+
+    setFlakes(generated);
+  }, []);
+
+  if (flakes.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {flakes.map((flake, i) => (
+        <motion.div
+          key={i}
+          className="absolute select-none text-white"
+          style={{
+            left: `${flake.left}%`,
+            top: "-20px",
+            fontSize: `${flake.size}px`,
+            opacity: flake.opacity,
+          }}
+          animate={{ y: ["0vh", "110vh"], rotate: [0, 360] }}
+          transition={{
+            duration: flake.duration,
+            repeat: Infinity,
+            delay: flake.delay,
+            ease: "linear",
+          }}
+        >
+          ❄
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
   // Convert walkProgress (0–100) to a CSS left % within the track
   // Penguin starts at left ~2% and ends near the mountain at ~62%
   const penguinLeftPct = `${2 + Math.min(walkProgress * 0.6, 60)}%`;
@@ -605,29 +654,7 @@ export default function Home() {
         }}
       >
         {/* ── Snowflakes ── */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(24)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute select-none text-white"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: "-20px",
-                fontSize: `${10 + Math.random() * 14}px`,
-                opacity: 0.12 + Math.random() * 0.14,
-              }}
-              animate={{ y: ["0vh", "110vh"], rotate: [0, 360] }}
-              transition={{
-                duration: 7 + Math.random() * 10,
-                repeat: Infinity,
-                delay: Math.random() * 12,
-                ease: "linear",
-              }}
-            >
-              ❄
-            </motion.div>
-          ))}
-        </div>
+        <SnowBackground />
 
         {/* ── Header ── */}
         <motion.header

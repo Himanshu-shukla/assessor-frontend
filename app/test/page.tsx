@@ -118,6 +118,16 @@ function PenguinThinking({ answered }: { answered: boolean }) {
 
 // ─── Snowflakes ───────────────────────────────────────────────────────────────
 function Snowflakes() {
+  const [mounted, setMounted] = useState(false);
+
+  // useEffect only runs on the client (browser)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Return null during Server-Side Rendering to prevent hydration mismatch
+  if (!mounted) return null;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {[...Array(16)].map((_, i) => (
@@ -135,6 +145,52 @@ function Snowflakes() {
             duration: 8 + Math.random() * 10,
             repeat: Infinity,
             delay: Math.random() * 12,
+            ease: "linear",
+          }}
+        >
+          ❄
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function SnowBackground() {
+  const [flakes, setFlakes] = useState<
+    { left: number; size: number; opacity: number; duration: number; delay: number }[]
+  >([]);
+
+  useEffect(() => {
+    const generated = Array.from({ length: 24 }).map(() => ({
+      left: Math.random() * 100,
+      size: 10 + Math.random() * 14,
+      opacity: 0.12 + Math.random() * 0.14,
+      duration: 7 + Math.random() * 10,
+      delay: Math.random() * 12,
+    }));
+
+    setFlakes(generated);
+  }, []);
+
+  if (flakes.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {flakes.map((flake, i) => (
+        <motion.div
+          key={i}
+          className="absolute select-none text-white"
+          style={{
+            left: `${flake.left}%`,
+            top: "-20px",
+            fontSize: `${flake.size}px`,
+            opacity: flake.opacity,
+          }}
+          animate={{ y: ["0vh", "110vh"], rotate: [0, 360] }}
+          transition={{
+            duration: flake.duration,
+            repeat: Infinity,
+            delay: flake.delay,
             ease: "linear",
           }}
         >
@@ -191,8 +247,8 @@ function QuestionProgress({ current, total }: { current: number; total: number }
               i < current
                 ? "linear-gradient(90deg,#22d3ee,#3b82f6)"
                 : i === current
-                ? "rgba(34,211,238,0.4)"
-                : "rgba(255,255,255,0.08)",
+                  ? "rgba(34,211,238,0.4)"
+                  : "rgba(255,255,255,0.08)",
           }}
           animate={i === current ? { opacity: [0.4, 1, 0.4] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -218,17 +274,33 @@ export default function TestPage() {
 
   // Fetch questions
   useEffect(() => {
-    if (!uploadId) { router.push("/"); return; }
-    const fetch = async () => {
+    if (!uploadId) { 
+      router.push("/"); 
+      return; 
+    }
+    
+    const fetchQuestions = async () => {
       try {
         const { data } = await axios.get(`${API_URL}/test/${uploadId}/questions`);
-        setQuestions(data.questions);
-      } catch {
+        
+        // 🔥 FIX: Use data.questions if it exists, otherwise fall back to data directly
+        const questionsArray = data.questions || data;
+        
+        if (!questionsArray || questionsArray.length === 0) {
+           setError("No questions found for this assessment.");
+           return;
+        }
+
+        setQuestions(questionsArray);
+      } catch (err) {
+        console.error("Fetch error:", err);
         setError("Failed to load questions. Please refresh.");
       }
     };
-    fetch();
+    
+    fetchQuestions();
   }, [uploadId, setQuestions, router]);
+  
 
   // Timer countdown
   useEffect(() => {
@@ -248,7 +320,23 @@ export default function TestPage() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const { data } = await axios.post(`${API_URL}/test/${uploadId}/submit`, { answers });
+      // 1. Transform index-based answers to ID-based answers
+      const formattedAnswers: Record<string, string> = {};
+
+      questions.forEach((q, index) => {
+        // Depending on how your API returns data, it might be q._id or q.id
+        const questionId = q._id || q.id;
+
+        if (answers[index] && questionId) {
+          formattedAnswers[questionId] = answers[index];
+        }
+      });
+
+      // 2. Send the formatted answers to the backend
+      const { data } = await axios.post(`${API_URL}/test/${uploadId}/submit`, {
+        answers: formattedAnswers
+      });
+
       setResults(data);
       router.push("/results");
     } catch {
@@ -266,7 +354,23 @@ export default function TestPage() {
     }
   };
 
-  const currentQ = questions[currentQuestionIndex];
+  if (!questions || questions.length === 0) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center gap-6">
+        <PenguinThinking answered={false} />
+        <p className="text-cyan-400 font-bold text-lg">
+          Loading your assessment...
+        </p>
+      </main>
+    );
+  }
+
+  const currentQ = questions?.[currentQuestionIndex];
+
+  if (!currentQ) {
+    return null; // extra safety
+  }
+
   const isLast = currentQuestionIndex === questions.length - 1;
   const hasAnswer = !!answers[currentQuestionIndex];
   const isUrgent = timeLeft < TOTAL_TIME * 0.2;

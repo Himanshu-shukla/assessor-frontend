@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface AppState {
   user: any | null;
   setUser: (user: any) => void;
-  
+
   uploadStatus: 'idle' | 'uploading' | 'parsing' | 'ready';
   setUploadStatus: (status: 'idle' | 'uploading' | 'parsing' | 'ready') => void;
   uploadId: string | null;
@@ -38,21 +38,29 @@ export const useStore = create<AppState>((set) => ({
     currentQuestionIndex: 0,
     answers: {},
     timeRemaining: 1800, // 30 mins
-    setQuestions: (questions) => set((state) => ({ test: { ...state.test, questions } })),
+    setQuestions: (questions) =>
+      set((state) => ({
+        test: {
+          ...state.test,
+          questions,
+          currentQuestionIndex: 0,
+          answers: {},
+        },
+      })),
     setAnswer: (index, answer) => set((state) => ({
       test: { ...state.test, answers: { ...state.test.answers, [index]: answer } }
     })),
     nextQuestion: () => set((state) => ({
       test: { ...state.test, currentQuestionIndex: state.test.currentQuestionIndex + 1 }
     })),
-    resetTest: () => set((state) => ({ 
-      test: { 
-        ...state.test, 
-        questions: [], 
-        currentQuestionIndex: 0, 
-        answers: {}, 
-        timeRemaining: 1800 
-      } 
+    resetTest: () => set((state) => ({
+      test: {
+        ...state.test,
+        questions: [],
+        currentQuestionIndex: 0,
+        answers: {},
+        timeRemaining: 1800
+      }
     })),
   },
 
