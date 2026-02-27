@@ -12,85 +12,26 @@ import { ChevronRight, Send, AlertCircle } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-// ─── Theme Configuration ──────────────────────────────────────────────────────
-const themes = [
-  {
-    name: "Sky Blue",
-    bgGradient: "from-slate-50 via-sky-50 to-indigo-50",
-    brandText: "text-sky-500",
-    brandHex: "#0ea5e9",
-    snowText: "text-sky-200",
-    badgeBg: "rgba(14, 165, 233, 0.1)",
-    badgeBorder: "rgba(14, 165, 233, 0.2)",
-    radioActiveBg: "rgba(14, 165, 233, 0.06)",
-    radioActiveBorder: "rgba(14, 165, 233, 0.4)",
-    radioHoverBg: "rgba(14, 165, 233, 0.02)",
-    buttonGradient: "linear-gradient(135deg, #0ea5e9, #3b82f6)",
-    buttonShadow: "0 10px 20px rgba(14, 165, 233, 0.25)",
-    progressGradient: "linear-gradient(90deg, #0ea5e9, #3b82f6)",
-    progressActive: "rgba(14, 165, 233, 0.4)",
-    successBg: "rgba(14, 165, 233, 0.12)",
-    successBorder: "rgba(14, 165, 233, 0.25)",
-    successText: "#0ea5e9",
-  },
-  {
-    name: "Rose Red",
-    bgGradient: "from-slate-50 via-rose-50 to-pink-50",
-    brandText: "text-rose-500",
-    brandHex: "#f43f5e",
-    snowText: "text-rose-200",
-    badgeBg: "rgba(244, 63, 94, 0.1)",
-    badgeBorder: "rgba(244, 63, 94, 0.2)",
-    radioActiveBg: "rgba(244, 63, 94, 0.06)",
-    radioActiveBorder: "rgba(244, 63, 94, 0.4)",
-    radioHoverBg: "rgba(244, 63, 94, 0.02)",
-    buttonGradient: "linear-gradient(135deg, #f43f5e, #be123c)",
-    buttonShadow: "0 10px 20px rgba(244, 63, 94, 0.25)",
-    progressGradient: "linear-gradient(90deg, #f43f5e, #be123c)",
-    progressActive: "rgba(244, 63, 94, 0.4)",
-    successBg: "rgba(244, 63, 94, 0.12)",
-    successBorder: "rgba(244, 63, 94, 0.25)",
-    successText: "#f43f5e",
-  },
-  {
-    name: "Emerald Green",
-    bgGradient: "from-slate-50 via-emerald-50 to-teal-50",
-    brandText: "text-emerald-500",
-    brandHex: "#10b981",
-    snowText: "text-emerald-200",
-    badgeBg: "rgba(16, 185, 129, 0.1)",
-    badgeBorder: "rgba(16, 185, 129, 0.2)",
-    radioActiveBg: "rgba(16, 185, 129, 0.06)",
-    radioActiveBorder: "rgba(16, 185, 129, 0.4)",
-    radioHoverBg: "rgba(16, 185, 129, 0.02)",
-    buttonGradient: "linear-gradient(135deg, #10b981, #0f766e)",
-    buttonShadow: "0 10px 20px rgba(16, 185, 129, 0.25)",
-    progressGradient: "linear-gradient(90deg, #10b981, #0f766e)",
-    progressActive: "rgba(16, 185, 129, 0.4)",
-    successBg: "rgba(16, 185, 129, 0.12)",
-    successBorder: "rgba(16, 185, 129, 0.25)",
-    successText: "#10b981",
-  },
-  {
-    name: "Amber Yellow",
-    bgGradient: "from-slate-50 via-amber-50 to-yellow-50",
-    brandText: "text-amber-500",
-    brandHex: "#f59e0b",
-    snowText: "text-amber-200",
-    badgeBg: "rgba(245, 158, 11, 0.1)",
-    badgeBorder: "rgba(245, 158, 11, 0.2)",
-    radioActiveBg: "rgba(245, 158, 11, 0.06)",
-    radioActiveBorder: "rgba(245, 158, 11, 0.4)",
-    radioHoverBg: "rgba(245, 158, 11, 0.02)",
-    buttonGradient: "linear-gradient(135deg, #f59e0b, #b45309)",
-    buttonShadow: "0 10px 20px rgba(245, 158, 11, 0.25)",
-    progressGradient: "linear-gradient(90deg, #f59e0b, #b45309)",
-    progressActive: "rgba(245, 158, 11, 0.4)",
-    successBg: "rgba(245, 158, 11, 0.12)",
-    successBorder: "rgba(245, 158, 11, 0.25)",
-    successText: "#f59e0b",
-  },
-];
+// ─── Fixed Theme Configuration ────────────────────────────────────────────────
+const activeTheme = {
+  name: "Amber Yellow",
+  bgGradient: "from-slate-50 via-amber-50 to-yellow-50",
+  brandText: "text-amber-500",
+  brandHex: "#f59e0b",
+  snowText: "text-amber-200",
+  badgeBg: "rgba(245, 158, 11, 0.1)",
+  badgeBorder: "rgba(245, 158, 11, 0.2)",
+  radioActiveBg: "rgba(245, 158, 11, 0.06)",
+  radioActiveBorder: "rgba(245, 158, 11, 0.4)",
+  radioHoverBg: "rgba(245, 158, 11, 0.02)",
+  buttonGradient: "linear-gradient(135deg, #f59e0b, #b45309)",
+  buttonShadow: "0 10px 20px rgba(245, 158, 11, 0.25)",
+  progressGradient: "linear-gradient(90deg, #f59e0b, #b45309)",
+  progressActive: "rgba(245, 158, 11, 0.4)",
+  successBg: "rgba(245, 158, 11, 0.12)",
+  successBorder: "rgba(245, 158, 11, 0.25)",
+  successText: "#f59e0b",
+};
 
 // ─── Penguin Thinking Character ───────────────────────────────────────────────
 function PenguinThinking({ answered }: { answered: boolean }) {
@@ -298,10 +239,6 @@ export default function TestPage() {
   const { test, uploadId, setResults } = useStore();
   const { setQuestions, setAnswer, nextQuestion, questions, currentQuestionIndex, answers } = test;
 
-  // Theme cycler state
-  const [themeIndex, setThemeIndex] = useState(0);
-  const activeTheme = themes[themeIndex];
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 min
@@ -309,14 +246,6 @@ export default function TestPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const TOTAL_TIME = 30 * 60;
-
-  // ── Cycle Theme Every 5 Seconds ──
-  useEffect(() => {
-    const themeCycler = setInterval(() => {
-      setThemeIndex((prev) => (prev + 1) % themes.length);
-    }, 5000);
-    return () => clearInterval(themeCycler);
-  }, []);
 
   // Fetch questions
   useEffect(() => {
