@@ -4,8 +4,10 @@ import { useStore } from "@/store/useStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Share2, TrendingUp, AlertTriangle, Zap, Target, Award, Download, Eye,X,        // Added this
-Loader2 } from "lucide-react";
+import {
+  Share2, TrendingUp, AlertTriangle, Zap, Target, Award, Download, Eye, X,        // Added this
+  Loader2
+} from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -381,9 +383,9 @@ function ScoreRing({ score, semanticColor }: { score: number; semanticColor: str
 }
 
 // ─── Certificate Modal Component ─────────────────────────────────────────────
-function CertificateModal({ isOpen, onClose, score, percentile, companyName }: { 
-  isOpen: boolean; 
-  onClose: () => void; 
+function CertificateModal({ isOpen, onClose, score, percentile, companyName }: {
+  isOpen: boolean;
+  onClose: () => void;
   score: number;
   percentile: number;
   companyName: string;
@@ -432,7 +434,7 @@ function CertificateModal({ isOpen, onClose, score, percentile, companyName }: {
             >
               <X className="w-4 h-4 text-white" />
             </button>
-            
+
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 flex items-center justify-center">
                 <Award className="w-6 h-6 text-white" />
@@ -450,7 +452,7 @@ function CertificateModal({ isOpen, onClose, score, percentile, companyName }: {
 
           <CardContent className="p-8">
             {/* Certificate Design */}
-            <div 
+            <div
               ref={certificateRef}
               className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border-2 border-amber-500/30 shadow-2xl"
             >
@@ -566,11 +568,11 @@ export default function ResultsDashboard() {
   const score = results?.score || 0;
   const percentile = results?.percentile || 0;
 
-  const swot = results?.swotAnalysis || {
-    strengths: ["Data unavailable. Please take the test."],
-    weaknesses: ["Data unavailable."],
-    opportunities: ["Data unavailable."],
-    threats: ["Data unavailable."],
+  const swot = {
+    strengths: results?.swotAnalysis?.strengths ?? [],
+    weaknesses: results?.swotAnalysis?.weaknesses ?? [],
+    opportunities: results?.swotAnalysis?.opportunities ?? [],
+    threats: results?.swotAnalysis?.threats ?? [],
   };
 
   const isGood = score >= 70;
@@ -579,7 +581,7 @@ export default function ResultsDashboard() {
 
   // Semantic color represents the score performance (kept constant regardless of app theme)
   const semanticColor = isGood ? "#10b981" : isMid ? "#f59e0b" : "#ef4444";
-  
+
   const motMessages = isGood ? goodMessages : isMid ? midMessages : badMessages;
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
@@ -587,7 +589,7 @@ export default function ResultsDashboard() {
     const text = `I scored ${score}/100 and I'm in the top ${100 - percentile}% of Devs on my stack! 🚀`;
     const url = window.location.origin;
     const fullText = `${text} ${url}`;
-    
+
     // Check if Web Share API is available AND we're on a secure context
     if (navigator.share && window.isSecureContext) {
       try {
@@ -604,7 +606,7 @@ export default function ResultsDashboard() {
       // Fallback: Copy to clipboard with visual feedback
       try {
         await navigator.clipboard.writeText(fullText);
-        
+
         // Show temporary success message
         const shareButton = document.getElementById('share-button');
         if (shareButton) {
@@ -614,7 +616,7 @@ export default function ResultsDashboard() {
             shareButton.innerHTML = originalText;
           }, 2000);
         }
-        
+
         // Also show a toast/alert for better UX
         alert("✅ Link copied to clipboard! You can now share it anywhere.");
       } catch (err) {
@@ -629,14 +631,14 @@ export default function ResultsDashboard() {
       const url = isGood
         ? "https://www.myinstants.com/media/sounds/ta-da.mp3"
         : isBad
-        ? "https://www.myinstants.com/media/sounds/sad-trombone.mp3"
-        : null;
+          ? "https://www.myinstants.com/media/sounds/sad-trombone.mp3"
+          : null;
       if (url) {
         const a = new Audio(url);
         a.volume = 0.25;
-        a.play().catch(() => {});
+        a.play().catch(() => { });
       }
-    } catch (_) {}
+    } catch (_) { }
   }, [isGood, isBad]);
 
   return (
@@ -644,7 +646,7 @@ export default function ResultsDashboard() {
       className={`min-h-screen relative overflow-hidden transition-colors duration-1000 bg-gradient-to-br ${activeTheme.bgGradient}`}
       style={{ fontFamily: "'Nunito', system-ui, sans-serif" }}
     >
-     
+
       {isGood && <Confetti />}
 
       {isBad && (
@@ -676,7 +678,7 @@ export default function ResultsDashboard() {
             <div className="flex items-center gap-3 mb-1">
               <span className="text-3xl bg-white p-1 rounded-xl shadow-sm border border-slate-100">🐧</span>
               <h1 className="text-2xl font-black text-slate-800 transition-colors duration-500">
-                Skill<span className={activeTheme.brandText}>{ " Rank"}</span>
+                Skill<span className={activeTheme.brandText}>{" Rank"}</span>
               </h1>
             </div>
             <p className="text-slate-500 font-medium text-xs mt-1">
@@ -692,12 +694,12 @@ export default function ResultsDashboard() {
               <Award className="w-4 h-4 mr-2" /> View Certificate
             </Button> */}
             <Button
-  id="share-button"
-  onClick={shareRank}
-  className="border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-all"
->
-  <Share2 className="w-4 h-4 mr-2" /> Share My Rank
-</Button>
+              id="share-button"
+              onClick={shareRank}
+              className="border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-all"
+            >
+              <Share2 className="w-4 h-4 mr-2" /> Share My Rank
+            </Button>
           </div>
         </motion.div>
 
@@ -745,8 +747,8 @@ export default function ResultsDashboard() {
                       {isGood
                         ? "Outstanding! You rank among the elite developers worldwide."
                         : isMid
-                        ? "Solid foundation! A bit more practice and you'll be unstoppable."
-                        : "Don't worry — every expert started here. The grind begins now."}
+                          ? "Solid foundation! A bit more practice and you'll be unstoppable."
+                          : "Don't worry — every expert started here. The grind begins now."}
                     </p>
                   </motion.div>
                 </div>
@@ -841,18 +843,24 @@ export default function ResultsDashboard() {
                 <CardTitle className="text-emerald-600 font-black text-lg">Strengths</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
-                {swot.strengths.map((item: string, i: number) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 + i * 0.1 }}
-                    className="flex items-start gap-3 bg-white/80 p-3.5 rounded-xl border border-emerald-50 shadow-sm"
-                  >
-                    <span className="text-emerald-500 mt-0.5 flex-shrink-0 font-bold">✓</span>
-                    <span className="text-slate-700 font-medium">{item}</span>
-                  </motion.div>
-                ))}
+                {
+                  swot.strengths.length === 0 ? (
+                    <p className="text-slate-400 text-sm">
+                      No strong areas identified yet.
+                    </p>
+                  ) :
+                    (swot.strengths.map((item: string, i: number) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 + i * 0.1 }}
+                        className="flex items-start gap-3 bg-white/80 p-3.5 rounded-xl border border-emerald-50 shadow-sm"
+                      >
+                        <span className="text-emerald-500 mt-0.5 flex-shrink-0 font-bold">✓</span>
+                        <span className="text-slate-700 font-medium">{item}</span>
+                      </motion.div>
+                    )))}
               </CardContent>
             </Card>
           </motion.div>
