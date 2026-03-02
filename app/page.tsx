@@ -29,8 +29,6 @@ const themes = [
     brandTextHover: "hover:decoration-sky-500 decoration-sky-300",
     badge1: "text-sky-600 border-sky-200",
     badge2: "text-indigo-600 border-indigo-200",
-    jokeShadow: "shadow-sky-100/50",
-    jokeBorder: "rgba(186, 230, 253, 0.6)", // sky-200
     dropzoneActive: "border-sky-400 bg-sky-50 shadow-sky-100",
     dropzoneHover: "hover:border-sky-400 hover:bg-sky-50/50 hover:shadow-sky-100",
     iconBg: "bg-gradient-to-br from-sky-400 to-blue-500 shadow-sky-400/40",
@@ -50,8 +48,6 @@ const themes = [
     brandTextHover: "hover:decoration-rose-500 decoration-rose-300",
     badge1: "text-rose-600 border-rose-200",
     badge2: "text-pink-600 border-pink-200",
-    jokeShadow: "shadow-rose-100/50",
-    jokeBorder: "rgba(254, 205, 211, 0.6)", // rose-200
     dropzoneActive: "border-rose-400 bg-rose-50 shadow-rose-100",
     dropzoneHover: "hover:border-rose-400 hover:bg-rose-50/50 hover:shadow-rose-100",
     iconBg: "bg-gradient-to-br from-rose-400 to-pink-500 shadow-rose-400/40",
@@ -71,8 +67,6 @@ const themes = [
     brandTextHover: "hover:decoration-emerald-500 decoration-emerald-300",
     badge1: "text-emerald-600 border-emerald-200",
     badge2: "text-teal-600 border-teal-200",
-    jokeShadow: "shadow-emerald-100/50",
-    jokeBorder: "rgba(167, 243, 208, 0.6)", // emerald-200
     dropzoneActive: "border-emerald-400 bg-emerald-50 shadow-emerald-100",
     dropzoneHover: "hover:border-emerald-400 hover:bg-emerald-50/50 hover:shadow-emerald-100",
     iconBg: "bg-gradient-to-br from-emerald-400 to-teal-500 shadow-emerald-400/40",
@@ -92,8 +86,6 @@ const themes = [
     brandTextHover: "hover:decoration-amber-500 decoration-amber-300",
     badge1: "text-amber-600 border-amber-200",
     badge2: "text-yellow-600 border-yellow-200",
-    jokeShadow: "shadow-amber-100/50",
-    jokeBorder: "rgba(253, 230, 138, 0.6)", // amber-200
     dropzoneActive: "border-amber-400 bg-amber-50 shadow-amber-100",
     dropzoneHover: "hover:border-amber-400 hover:bg-amber-50/50 hover:shadow-amber-100",
     iconBg: "bg-gradient-to-br from-amber-400 to-yellow-500 shadow-amber-400/40",
@@ -126,22 +118,6 @@ const walkingMessages = [
   "Fine. THE MOUNTAIN IT IS. 🏔️💨",
 ];
 
-// ─── Jokes cycling above upload ───────────────────────────────────────────────
-const normalJokes = [
-  "Why don't penguins like strangers at parties? Hard to break the ice! 🧊",
-  "Three companies were after me. Boss asked which. Gas, Electric & Water! 💡",
-  "Why did the resume go to therapy? Too many issues! 📄",
-  "Penguin in the desert? Lost. Very, very lost. 🐧🏜️",
-  "My resume says I work well under pressure. Currently being tested. 😅",
-  "Why did the dev quit? He didn't get arrays! 💻",
-  "Penguin at interview. Recruiter: 'You seem cool.' 🐧❄️",
-  "Put 'Microsoft Office' on resume. Hired for Excel-lent reasons! 📊",
-  "Why is a penguin a great employee? Always shows up in a suit! 🤵",
-  "My CV says I'm a quick learner. Learned that the hard way. 📝",
-  "What do you call a fish with no eyes? A fsh. 🐟",
-  "Why do Java developers wear glasses? Because they don't C#! 😎",
-];
-
 const sadJokes = [
   "The penguin died waiting... and so did my dreams. 😭",
   "RIP brave penguin. Died doing what he loved: waiting for a PDF. 🪦",
@@ -157,7 +133,7 @@ const sadJokes = [
 // ─── Mountain SVG — supports "crashed" state ─────────────────────────────────
 function Mountain({ crashed }: { crashed: boolean }) {
   return (
-    <svg viewBox="0 0 320 200" width="320" height="200" className="flex-shrink-0">
+    <svg viewBox="0 0 320 200" width="200" height="130" className="flex-shrink-0">
       {crashed ? (
         <>
           <motion.polygon
@@ -245,7 +221,7 @@ function PenguinCharacter({
   return (
     <motion.div
       className="relative select-none"
-      style={{ width: 120, height: 160 }}
+      style={{ width: 80, height: 110 }}
       animate={
         isDead
           ? { rotate: 90, y: 32 }
@@ -265,7 +241,7 @@ function PenguinCharacter({
               : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
       }
     >
-      <svg viewBox="0 0 120 160" width="120" height="160">
+      <svg viewBox="0 0 120 160" width="80" height="110">
         <ellipse cx="60" cy="155" rx="30" ry="6" fill="rgba(0,0,0,0.08)" />
         <ellipse cx="60" cy="100" rx="38" ry="50" fill="#1e293b" />
         <ellipse cx="60" cy="108" rx="24" ry="35" fill="#f8fafc" />
@@ -290,11 +266,7 @@ function PenguinCharacter({
           </>
         )}
 
-        <polygon
-          points="60,64 55,70 65,70"
-          fill="#f97316"
-          transform={isDead ? "translate(0,3)" : ""}
-        />
+        <polygon points="60,64 55,70 65,70" fill="#f97316" transform={isDead ? "translate(0,3)" : ""} />
 
         <motion.g
           animate={
@@ -328,18 +300,9 @@ function PenguinCharacter({
           <ellipse cx="100" cy="92" rx="10" ry="22" fill="#1e293b" transform="rotate(10,100,92)" />
         </motion.g>
 
-        <motion.g
-          animate={isWalking ? { x: [0, 5, 0, -5, 0] } : {}}
-          transition={{ duration: 0.38, repeat: Infinity }}
-        >
-          <ellipse
-            cx="50" cy="148" rx="12" ry="6" fill="#f97316"
-            transform={isWalking ? "rotate(-12,50,148)" : ""}
-          />
-          <ellipse
-            cx="70" cy="148" rx="12" ry="6" fill="#f97316"
-            transform={isWalking ? "rotate(12,70,148)" : ""}
-          />
+        <motion.g animate={isWalking ? { x: [0, 5, 0, -5, 0] } : {}} transition={{ duration: 0.38, repeat: Infinity }}>
+          <ellipse cx="50" cy="148" rx="12" ry="6" fill="#f97316" transform={isWalking ? "rotate(-12,50,148)" : ""} />
+          <ellipse cx="70" cy="148" rx="12" ry="6" fill="#f97316" transform={isWalking ? "rotate(12,70,148)" : ""} />
         </motion.g>
 
         {isHappy && (
@@ -351,16 +314,8 @@ function PenguinCharacter({
 
         {isWaiting && (
           <>
-            <motion.ellipse cx="49" cy="63" rx="2.5" ry="3.5" fill={tearColor}
-              style={{ transition: "fill 0.5s ease" }}
-              animate={{ cy: [63, 74], opacity: [1, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 0.5 }}
-            />
-            <motion.ellipse cx="71" cy="63" rx="2.5" ry="3.5" fill={tearColor}
-              style={{ transition: "fill 0.5s ease" }}
-              animate={{ cy: [63, 74], opacity: [1, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 0.9 }}
-            />
+            <motion.ellipse cx="49" cy="63" rx="2.5" ry="3.5" fill={tearColor} style={{ transition: "fill 0.5s ease" }} animate={{ cy: [63, 74], opacity: [1, 0] }} transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 0.5 }} />
+            <motion.ellipse cx="71" cy="63" rx="2.5" ry="3.5" fill={tearColor} style={{ transition: "fill 0.5s ease" }} animate={{ cy: [63, 74], opacity: [1, 0] }} transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 0.9 }} />
           </>
         )}
       </svg>
@@ -416,11 +371,7 @@ function DeathScreen({ onReload }: { onReload: () => void }) {
         transition={{ delay: 0.2, type: "spring", stiffness: 180 }}
         className="relative z-10 flex flex-col items-center gap-6 max-w-lg px-8 text-center"
       >
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="text-8xl drop-shadow-lg"
-        >
+        <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="text-8xl drop-shadow-lg">
           🪦
         </motion.div>
 
@@ -478,29 +429,17 @@ function DeathScreen({ onReload }: { onReload: () => void }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Home() {
   const router = useRouter();
-  const {
-    uploadStatus,
-    setUploadStatus,
-    setUploadId,
-    setUser,
-    uploadId,        // 👈 add this
-  } = useStore();
-
+  const { uploadStatus, setUploadStatus, setUploadId, setUser, uploadId } = useStore();
   const [progress, setProgress] = useState(0);
 
   // Theme Cycler State
   const [themeIndex, setThemeIndex] = useState(0);
   const activeTheme = themes[themeIndex];
 
-  const [penguinState, setPenguinState] = useState<
-    "idle" | "waiting" | "walking" | "happy" | "dead"
-  >("idle");
+  const [penguinState, setPenguinState] = useState<"idle" | "waiting" | "walking" | "happy" | "dead">("idle");
   const [walkProgress, setWalkProgress] = useState(0);
   const [mountainCrashed, setMountainCrashed] = useState(false);
   const [showDeathScreen, setShowDeathScreen] = useState(false);
-
-  const [currentJoke, setCurrentJoke] = useState(0);
-  const [showJoke, setShowJoke] = useState(false);
 
   const [walkMsg, setWalkMsg] = useState("");
   const [showWalkMsg, setShowWalkMsg] = useState(false);
@@ -508,7 +447,6 @@ export default function Home() {
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const walkTimerRef = useRef<NodeJS.Timeout | null>(null);
   const walkMsgTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const jokeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // ── Cycle Theme Every 5 Seconds ──
@@ -517,20 +455,6 @@ export default function Home() {
       setThemeIndex((prev) => (prev + 1) % themes.length);
     }, 5000);
     return () => clearInterval(themeCycler);
-  }, []);
-
-  useEffect(() => {
-    const showNext = () => {
-      setCurrentJoke((p) => (p + 1) % normalJokes.length);
-      setShowJoke(true);
-      setTimeout(() => setShowJoke(false), 5200);
-    };
-    const init = setTimeout(showNext, 2000);
-    jokeTimerRef.current = setInterval(showNext, 9000);
-    return () => {
-      clearTimeout(init);
-      if (jokeTimerRef.current) clearInterval(jokeTimerRef.current);
-    };
   }, []);
 
   const startWalkMessages = useCallback(() => {
@@ -561,9 +485,7 @@ export default function Home() {
         startWalkMessages();
 
         try {
-          const audio = new Audio(
-            "https://www.myinstants.com/media/sounds/sad-trombone.mp3"
-          );
+          const audio = new Audio("https://www.myinstants.com/media/sounds/sad-trombone.mp3");
           audio.volume = 0.3;
           audio.play().catch(() => { });
           audioRef.current = audio;
@@ -653,11 +575,8 @@ export default function Home() {
 
     try {
       setUploadStatus("parsing");
-
       await axios.post(`${API_URL}/analysis/${uploadId}`);
-
       router.push(`/analysis/${uploadId}`);
-
     } catch (error) {
       console.error(error);
     }
@@ -702,7 +621,7 @@ export default function Home() {
     if (flakes.length === 0) return null;
 
     return (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         {flakes.map((flake, i) => (
           <motion.div
             key={i}
@@ -728,7 +647,6 @@ export default function Home() {
     );
   }
 
-
   const penguinLeftPct = `${2 + Math.min(walkProgress * 0.6, 60)}%`;
 
   return (
@@ -739,7 +657,6 @@ export default function Home() {
         className={`min-h-screen flex flex-col items-center relative overflow-hidden bg-gradient-to-br transition-colors duration-1000 ${activeTheme.bgGradient}`}
         style={{ fontFamily: "'Nunito', system-ui, sans-serif" }}
       >
-
         <SnowBackground snowClass={activeTheme.snowText} />
 
         <motion.header
@@ -765,15 +682,14 @@ export default function Home() {
           </div>
         </motion.header>
 
-        <div className="relative z-10 w-full max-w-2xl mx-auto px-6 flex flex-col items-center gap-6 mt-6 pb-60">
-
+        <div className="relative z-10 w-full max-w-2xl mx-auto px-6 flex flex-col items-center gap-6 mt-6 pb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-black text-slate-800 mb-3 leading-tight drop-shadow-sm">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-800 leading-tight drop-shadow-sm">
               Upload Your Resume
             </h2>
             <AnimatePresence mode="wait">
@@ -815,26 +731,103 @@ export default function Home() {
             </AnimatePresence>
           </motion.div>
 
-          <div className="relative h-14 w-full flex items-center justify-center z-20">
-            <AnimatePresence mode="wait">
-              {showJoke && (
-                <motion.div
-                  key={currentJoke}
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
-                  className={`absolute w-full rounded-2xl px-6 py-3 text-center text-sm font-bold text-slate-700 shadow-lg transition-all duration-1000 ${activeTheme.jokeShadow}`}
-                  style={{
-                    background: "rgba(255, 255, 255, 0.95)",
-                    border: `1px solid ${activeTheme.jokeBorder}`,
-                    backdropFilter: "blur(12px)",
-                  }}
-                >
-                  💬 {normalJokes[currentJoke]}
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* ─── PENGUIN SCENE (Moved directly above the Dropzone) ──────── */}
+          <div className="relative w-full h-28 mt-2 mb-[-0.5rem] pointer-events-none z-20">
+            {/* Ground */}
+            <svg
+              className="absolute bottom-0 left-0 w-full"
+              viewBox="0 0 1400 50"
+              preserveAspectRatio="none"
+              height="20"
+            >
+              <ellipse cx="250" cy="15" rx="220" ry="10" fill="#e2e8f0" opacity="0.6" />
+              <ellipse cx="750" cy="15" rx="300" ry="10" fill="#f1f5f9" opacity="0.8" />
+              <ellipse cx="1150" cy="15" rx="200" ry="10" fill="#e2e8f0" opacity="0.5" />
+            </svg>
+
+            <div className="absolute bottom-0 left-0 right-0 h-full">
+              {penguinState === "walking" &&
+                [...Array(7)].map((_, i) => {
+                  const footLeft = parseFloat(penguinLeftPct) - (i + 1) * 5;
+                  if (footLeft < 0) return null;
+                  return (
+                    <motion.div
+                      key={i}
+                      className="absolute bottom-3 text-slate-300"
+                      style={{ left: `${footLeft}%`, fontSize: 10 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 0.8, 0] }}
+                      transition={{ delay: i * 0.13, duration: 2, repeat: Infinity }}
+                    >
+                      🐾
+                    </motion.div>
+                  );
+                })}
+
+              <motion.div
+                className="absolute bottom-0"
+                animate={{
+                  left:
+                    penguinState === "walking"
+                      ? penguinLeftPct
+                      : penguinState === "dead"
+                        ? "62%"
+                        : "2%",
+                }}
+                transition={
+                  penguinState === "walking"
+                    ? { duration: 0.2, ease: "linear" }
+                    : { duration: 0.6, ease: "easeOut" }
+                }
+              >
+                <AnimatePresence mode="wait">
+                  {showWalkMsg && penguinState === "walking" && (
+                    <motion.div
+                      key={walkMsg}
+                      initial={{ opacity: 0, y: 8, scale: 0.88 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.88 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute -top-6 left-10 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg shadow-red-200"
+                      style={{
+                        background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+                        minWidth: 160,
+                        maxWidth: 250,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {walkMsg}
+                      <div
+                        className="absolute -bottom-2 left-4 w-3 h-3"
+                        style={{ background: "#b91c1c", clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {(penguinState === "idle" || penguinState === "waiting") && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute -top-5 left-10 bg-white border border-slate-100 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap shadow-lg shadow-slate-200/50"
+                  >
+                    {penguinState === "idle"
+                      ? "Upload already... 👀"
+                      : "I swear I'm about to walk! 😤"}
+                    <div
+                      className="absolute -bottom-2 left-4 w-3 h-3 bg-white border-b border-r border-slate-100"
+                      style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+                    />
+                  </motion.div>
+                )}
+
+                <PenguinCharacter state={penguinState} tearColor={activeTheme.tearColor} />
+              </motion.div>
+
+              <div className="absolute right-4 md:right-0 bottom-[-10px]">
+                <Mountain crashed={mountainCrashed} />
+              </div>
+            </div>
           </div>
 
           <motion.div
@@ -851,7 +844,7 @@ export default function Home() {
                 boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(255,255,255,0.5) inset",
               }}
             >
-              <CardContent className="p-8 md:p-10">
+              <CardContent className="p-6 md:p-8">
                 <AnimatePresence mode="wait">
                   {uploadStatus === "idle" && (
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -946,7 +939,7 @@ export default function Home() {
                       <div className="grid gap-6">
 
                         {/* FREE TEST */}
-                        <Card className="p-6 cursor-pointer hover:shadow-lg"
+                        <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
                           onClick={() => router.push(`/test/${uploadId}`)}
                         >
                           <h4 className="text-xl font-bold mb-2">
@@ -955,13 +948,13 @@ export default function Home() {
                           <p className="text-slate-500">
                             MCQ-based skill assessment generated from your resume.
                           </p>
-                          <Badge className="mt-3 bg-green-100 text-green-700">
+                          <Badge className="mt-3 bg-green-100 text-green-700 hover:bg-green-200">
                             Free
                           </Badge>
                         </Card>
 
                         {/* AI ANALYSIS */}
-                        <Card className="p-6 cursor-pointer hover:shadow-lg border-2 border-indigo-200"
+                        <Card className="p-6 cursor-pointer hover:shadow-lg border-2 border-indigo-200 transition-shadow"
                           onClick={handleAIAnalysis}
                         >
                           <h4 className="text-xl font-bold mb-2">
@@ -970,7 +963,7 @@ export default function Home() {
                           <p className="text-slate-500">
                             Deep resume scoring, career insights & improvement roadmap.
                           </p>
-                          <Badge className="mt-3 bg-indigo-100 text-indigo-700">
+                          <Badge className="mt-3 bg-indigo-100 text-indigo-700 hover:bg-indigo-200">
                             AI Powered
                           </Badge>
                         </Card>
@@ -983,118 +976,49 @@ export default function Home() {
             </Card>
           </motion.div>
 
-          <div className="flex justify-center gap-6 text-slate-500 font-semibold text-sm">
-            <span className="flex items-center gap-1 bg-white/60 px-3 py-1.5 rounded-full border border-slate-200 backdrop-blur-sm">🏆 10,000+ Analyzed</span>
-            <span className="flex items-center gap-1 bg-white/60 px-3 py-1.5 rounded-full border border-slate-200 backdrop-blur-sm">🌍 45+ Countries</span>
-            <span className="flex items-center gap-1 bg-white/60 px-3 py-1.5 rounded-full border border-slate-200 backdrop-blur-sm">⚡ &lt;2 min Analysis</span>
-          </div>
-        </div>
-
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none overflow-hidden"
-          style={{ height: 220 }}
-        >
-          <svg
-            className="absolute bottom-8 left-0 w-full"
-            viewBox="0 0 1400 50"
-            preserveAspectRatio="none"
-            height="50"
-          >
-            <ellipse cx="250" cy="28" rx="220" ry="22" fill="#e2e8f0" opacity="0.6" />
-            <ellipse cx="750" cy="30" rx="300" ry="20" fill="#f1f5f9" opacity="0.8" />
-            <ellipse cx="1150" cy="28" rx="200" ry="18" fill="#e2e8f0" opacity="0.5" />
-          </svg>
-
           <div
-            className="absolute bottom-0 left-0 right-0 h-10"
-            style={{ background: "linear-gradient(to top, #f8fafc 60%, transparent)" }}
-          />
-
-          <div className="absolute bottom-8 left-0 right-0 px-20" style={{ height: 200 }}>
-            {penguinState === "walking" &&
-              [...Array(7)].map((_, i) => {
-                const footLeft = parseFloat(penguinLeftPct) - (i + 1) * 5;
-                if (footLeft < 0) return null;
-                return (
-                  <motion.div
-                    key={i}
-                    className="absolute bottom-7 text-slate-300"
-                    style={{ left: `${footLeft}%`, fontSize: 10 }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.8, 0] }}
-                    transition={{ delay: i * 0.13, duration: 2, repeat: Infinity }}
-                  >
-                    🐾
-                  </motion.div>
-                );
-              })}
-
+            className="w-full overflow-hidden relative max-w-2xl mx-auto mt-2"
+            style={{
+              // This creates the smooth fade-out effect on the left and right edges
+              maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)"
+            }}
+          >
             <motion.div
-              className="absolute bottom-4"
-              animate={{
-                left:
-                  penguinState === "walking"
-                    ? penguinLeftPct
-                    : penguinState === "dead"
-                      ? "62%"
-                      : "2%",
+              className="flex w-max gap-4 md:gap-6"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{
+                ease: "linear",
+                duration: 15, // Lower means faster, higher means slower
+                repeat: Infinity,
               }}
-              transition={
-                penguinState === "walking"
-                  ? { duration: 0.2, ease: "linear" }
-                  : { duration: 0.6, ease: "easeOut" }
-              }
             >
-              <AnimatePresence mode="wait">
-                {showWalkMsg && penguinState === "walking" && (
-                  <motion.div
-                    key={walkMsg}
-                    initial={{ opacity: 0, y: 8, scale: 0.88 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.88 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute -top-14 left-14 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg shadow-red-200"
-                    style={{
-                      background: "linear-gradient(135deg, #ef4444, #b91c1c)",
-                      minWidth: 160,
-                      maxWidth: 250,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {walkMsg}
-                    <div
-                      className="absolute -bottom-2 left-4 w-3 h-3"
-                      style={{
-                        background: "#b91c1c",
-                        clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-                      }}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {(penguinState === "idle" || penguinState === "waiting") && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="absolute -top-12 left-14 bg-white border border-slate-100 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap shadow-lg shadow-slate-200/50"
+              {/* We duplicate the array so that when the first half scrolls out of view, 
+      the second half perfectly takes its place, creating a seamless loop.
+    */}
+              {[
+                { icon: "🏆", text: "10,000+ Analyzed" },
+                { icon: "🌍", text: "45+ Countries" },
+                { icon: "⚡", text: "<2 min Analysis" },
+                { icon: "🔒", text: "Bank-Grade Security" },
+                // --- Duplicate set begins here ---
+                { icon: "🏆", text: "10,000+ Analyzed" },
+                { icon: "🌍", text: "45+ Countries" },
+                { icon: "⚡", text: "<2 min Analysis" },
+                { icon: "🔒", text: "Bank-Grade Security" },
+              ].map((stat, i) => (
+                <span
+                  key={i}
+                  className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full border border-white/60 shadow-sm backdrop-blur-md text-slate-600 font-bold text-xs md:text-sm transition-transform hover:scale-105 cursor-default"
+                  style={{
+                    boxShadow: "0 4px 12px rgba(15, 23, 42, 0.03), 0 0 0 1px rgba(255,255,255,0.5) inset"
+                  }}
                 >
-                  {penguinState === "idle"
-                    ? "Upload already... 👀"
-                    : "I swear I'm about to walk! 😤"}
-                  <div
-                    className="absolute -bottom-2 left-4 w-3 h-3 bg-white border-b border-r border-slate-100"
-                    style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
-                  />
-                </motion.div>
-              )}
-
-              <PenguinCharacter state={penguinState} tearColor={activeTheme.tearColor} />
+                  <span className="text-sm md:text-base">{stat.icon}</span>
+                  {stat.text}
+                </span>
+              ))}
             </motion.div>
-
-            <div className="absolute right-0 bottom-2">
-              <Mountain crashed={mountainCrashed} />
-            </div>
           </div>
         </div>
 
