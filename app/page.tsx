@@ -250,19 +250,19 @@ function PenguinCharacter({
         isDead
           ? { rotate: 90, y: 32 }
           : isHappy
-          ? { y: [0, -22, 0, -12, 0, -6, 0] }
-          : isWalking
-          ? { x: [0, 3, -3, 3, -3, 0] }
-          : { y: [0, -5, 0] }
+            ? { y: [0, -22, 0, -12, 0, -6, 0] }
+            : isWalking
+              ? { x: [0, 3, -3, 3, -3, 0] }
+              : { y: [0, -5, 0] }
       }
       transition={
         isDead
           ? { duration: 0.5 }
           : isHappy
-          ? { duration: 0.8, repeat: 3 }
-          : isWalking
-          ? { duration: 0.38, repeat: Infinity, ease: "linear" }
-          : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+            ? { duration: 0.8, repeat: 3 }
+            : isWalking
+              ? { duration: 0.38, repeat: Infinity, ease: "linear" }
+              : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
       }
     >
       <svg viewBox="0 0 120 160" width="120" height="160">
@@ -299,13 +299,13 @@ function PenguinCharacter({
         <motion.g
           animate={
             isWalking ? { rotate: [25, -25, 25] } :
-            isHappy ? { rotate: [0, 45, 0, 45, 0] } :
-            { rotate: [5, -5, 5] }
+              isHappy ? { rotate: [0, 45, 0, 45, 0] } :
+                { rotate: [5, -5, 5] }
           }
           transition={
             isWalking ? { duration: 0.38, repeat: Infinity } :
-            isHappy ? { duration: 0.35, repeat: 5 } :
-            { duration: 2, repeat: Infinity }
+              isHappy ? { duration: 0.35, repeat: 5 } :
+                { duration: 2, repeat: Infinity }
           }
           style={{ originX: "20px", originY: "90px" }}
         >
@@ -315,13 +315,13 @@ function PenguinCharacter({
         <motion.g
           animate={
             isWalking ? { rotate: [-25, 25, -25] } :
-            isHappy ? { rotate: [0, -45, 0, -45, 0] } :
-            { rotate: [-5, 5, -5] }
+              isHappy ? { rotate: [0, -45, 0, -45, 0] } :
+                { rotate: [-5, 5, -5] }
           }
           transition={
             isWalking ? { duration: 0.38, repeat: Infinity } :
-            isHappy ? { duration: 0.35, repeat: 5 } :
-            { duration: 2, repeat: Infinity }
+              isHappy ? { duration: 0.35, repeat: 5 } :
+                { duration: 2, repeat: Infinity }
           }
           style={{ originX: "100px", originY: "90px" }}
         >
@@ -478,7 +478,14 @@ function DeathScreen({ onReload }: { onReload: () => void }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Home() {
   const router = useRouter();
-  const { uploadStatus, setUploadStatus, setUploadId, setUser } = useStore();
+  const {
+    uploadStatus,
+    setUploadStatus,
+    setUploadId,
+    setUser,
+    uploadId,        // 👈 add this
+  } = useStore();
+
   const [progress, setProgress] = useState(0);
 
   // Theme Cycler State
@@ -488,7 +495,7 @@ export default function Home() {
   const [penguinState, setPenguinState] = useState<
     "idle" | "waiting" | "walking" | "happy" | "dead"
   >("idle");
-  const [walkProgress, setWalkProgress] = useState(0); 
+  const [walkProgress, setWalkProgress] = useState(0);
   const [mountainCrashed, setMountainCrashed] = useState(false);
   const [showDeathScreen, setShowDeathScreen] = useState(false);
 
@@ -558,9 +565,9 @@ export default function Home() {
             "https://www.myinstants.com/media/sounds/sad-trombone.mp3"
           );
           audio.volume = 0.3;
-          audio.play().catch(() => {});
+          audio.play().catch(() => { });
           audioRef.current = audio;
-        } catch (_) {}
+        } catch (_) { }
 
         let wp = 0;
         walkTimerRef.current = setInterval(() => {
@@ -619,19 +626,19 @@ export default function Home() {
       setWalkProgress(0);
 
       setUploadStatus("uploading");
-      setProgress(10);
+      setProgress(30);
       setPenguinState("happy");
 
       try {
         const formData = new FormData();
         formData.append("resume", acceptedFiles[0]);
         const { data } = await axios.post(`${API_URL}/upload`, formData);
-        
-        setUploadId(data.assessmentId); 
-        setProgress(30);
+
+        setUploadId(data.assessmentId);
+        setProgress(90);
         setUploadStatus("parsing");
-        pollStatus(data.assessmentId); 
-        
+        pollStatus(data.assessmentId);
+
       } catch (err) {
         console.error(err);
         setUploadStatus("idle");
@@ -640,6 +647,21 @@ export default function Home() {
     },
     [setUploadStatus, setUploadId, pollStatus]
   );
+
+  const handleAIAnalysis = async () => {
+    if (!uploadId) return;
+
+    try {
+      setUploadStatus("parsing");
+
+      await axios.post(`${API_URL}/analysis/${uploadId}`);
+
+      router.push(`/analysis/${uploadId}`);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -706,6 +728,7 @@ export default function Home() {
     );
   }
 
+
   const penguinLeftPct = `${2 + Math.min(walkProgress * 0.6, 60)}%`;
 
   return (
@@ -716,7 +739,7 @@ export default function Home() {
         className={`min-h-screen flex flex-col items-center relative overflow-hidden bg-gradient-to-br transition-colors duration-1000 ${activeTheme.bgGradient}`}
         style={{ fontFamily: "'Nunito', system-ui, sans-serif" }}
       >
-     
+
         <SnowBackground snowClass={activeTheme.snowText} />
 
         <motion.header
@@ -731,7 +754,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
-                Skill<span className={activeTheme.brandText}>{ " Rank"}</span>
+                Skill<span className={activeTheme.brandText}>{" Rank"}</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium">Powered by Mastery Nexus™</p>
             </div>
@@ -834,15 +857,14 @@ export default function Home() {
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <div
                         {...getRootProps()}
-                        className={`relative border-2 border-dashed rounded-3xl p-10 cursor-pointer transition-all duration-500 text-center bg-white/50 ${
-                          isDragActive
-                            ? activeTheme.dropzoneActive + " scale-[1.02]"
-                            : penguinState === "walking"
+                        className={`relative border-2 border-dashed rounded-3xl p-10 cursor-pointer transition-all duration-500 text-center bg-white/50 ${isDragActive
+                          ? activeTheme.dropzoneActive + " scale-[1.02]"
+                          : penguinState === "walking"
                             ? "border-red-300 bg-red-50 hover:bg-red-100 animate-pulse"
                             : penguinState === "dead"
-                            ? "border-slate-300 bg-slate-50 hover:bg-slate-100"
-                            : `border-slate-300 hover:bg-white/80 ${activeTheme.dropzoneHover}`
-                        }`}
+                              ? "border-slate-300 bg-slate-50 hover:bg-slate-100"
+                              : `border-slate-300 hover:bg-white/80 ${activeTheme.dropzoneHover}`
+                          }`}
                       >
                         <input {...getInputProps()} />
                         <motion.div
@@ -855,13 +877,12 @@ export default function Home() {
                           className="mb-6"
                         >
                           <div
-                            className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl transition-all duration-500 ${
-                              penguinState === "walking"
-                                ? "bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/30"
-                                : penguinState === "dead"
+                            className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl transition-all duration-500 ${penguinState === "walking"
+                              ? "bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/30"
+                              : penguinState === "dead"
                                 ? "bg-gradient-to-br from-slate-400 to-slate-600 shadow-slate-400/30"
                                 : activeTheme.iconBg
-                            }`}
+                              }`}
                           >
                             <UploadCloud className="w-10 h-10 text-white" />
                           </div>
@@ -875,8 +896,8 @@ export default function Home() {
                               {penguinState === "walking"
                                 ? "🆘 UPLOAD NOW to stop the penguin!"
                                 : penguinState === "dead"
-                                ? "🪦 Upload to summon a new penguin"
-                                : "Drag & drop your resume here"}
+                                  ? "🪦 Upload to summon a new penguin"
+                                  : "Drag & drop your resume here"}
                             </p>
                             <p className="text-slate-500 text-sm mb-6 font-medium">
                               or{" "}
@@ -916,22 +937,45 @@ export default function Home() {
                   )}
 
                   {uploadStatus === "ready" && (
-                    <motion.div key="ready" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-10">
-                      <motion.div animate={{ scale: [1, 1.12, 1] }} transition={{ duration: 0.5, delay: 0.2 }} className="relative w-28 h-28 mx-auto mb-6">
-                        <div className={`absolute inset-0 rounded-3xl animate-ping opacity-60 transition-colors duration-1000 ${activeTheme.successBg}`} />
-                        <div className={`relative w-28 h-28 rounded-3xl flex items-center justify-center shadow-xl transition-colors duration-1000 bg-gradient-to-br ${activeTheme.successIcon}`}>
-                          <CheckCircle className="w-14 h-14 text-white" />
-                        </div>
-                      </motion.div>
-                      <h3 className="text-slate-800 text-3xl font-black mb-2">🎉 Analysis Complete!</h3>
-                      <p className="text-slate-500 font-medium text-base mb-8">The penguin is doing a happy dance! 🕺</p>
-                      <Button
-                        onClick={handleContinue}
-                        className={`w-full text-white font-bold py-7 text-lg rounded-2xl shadow-xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] ${activeTheme.buttonBg}`}
-                      >
-                        View My Dashboard
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                      </Button>
+                    <motion.div className="text-center py-10">
+
+                      <h3 className="text-3xl font-black mb-6">
+                        🎯 Choose Your Evaluation Type
+                      </h3>
+
+                      <div className="grid gap-6">
+
+                        {/* FREE TEST */}
+                        <Card className="p-6 cursor-pointer hover:shadow-lg"
+                          onClick={() => router.push(`/test/${uploadId}`)}
+                        >
+                          <h4 className="text-xl font-bold mb-2">
+                            🧪 Free Skill Test
+                          </h4>
+                          <p className="text-slate-500">
+                            MCQ-based skill assessment generated from your resume.
+                          </p>
+                          <Badge className="mt-3 bg-green-100 text-green-700">
+                            Free
+                          </Badge>
+                        </Card>
+
+                        {/* AI ANALYSIS */}
+                        <Card className="p-6 cursor-pointer hover:shadow-lg border-2 border-indigo-200"
+                          onClick={handleAIAnalysis}
+                        >
+                          <h4 className="text-xl font-bold mb-2">
+                            🤖 AI Resume Analysis
+                          </h4>
+                          <p className="text-slate-500">
+                            Deep resume scoring, career insights & improvement roadmap.
+                          </p>
+                          <Badge className="mt-3 bg-indigo-100 text-indigo-700">
+                            AI Powered
+                          </Badge>
+                        </Card>
+
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -992,8 +1036,8 @@ export default function Home() {
                   penguinState === "walking"
                     ? penguinLeftPct
                     : penguinState === "dead"
-                    ? "62%"
-                    : "2%",
+                      ? "62%"
+                      : "2%",
               }}
               transition={
                 penguinState === "walking"
