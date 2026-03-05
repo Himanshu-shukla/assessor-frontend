@@ -659,10 +659,7 @@ export default function Home() {
       >
         <SnowBackground snowClass={activeTheme.snowText} />
 
-        <motion.header
-          initial={{ y: -40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+        <header
           className="w-full max-w-6xl mx-auto flex items-center justify-between px-8 py-6 z-20 relative"
         >
           <div className="flex items-center gap-3">
@@ -670,17 +667,17 @@ export default function Home() {
               <span className="text-3xl leading-none">🐧</span>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
+              <p className="text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
                 Skill<span className={activeTheme.brandText}>{" Rank"}</span>
-              </h1>
+              </p>
               <p className="text-xs text-slate-500 font-medium">Powered by Mastery Nexus™</p>
             </div>
           </div>
-          <div className="flex gap-3">
+          <nav className="flex gap-3">
             <Badge className={`bg-white shadow-sm text-xs py-1 px-3 transition-colors duration-500 border ${activeTheme.badge1}`}>🔒 Secure</Badge>
             <Badge className={`bg-white shadow-sm text-xs py-1 px-3 transition-colors duration-500 border ${activeTheme.badge2}`}>⚡ Fast</Badge>
-          </div>
-        </motion.header>
+          </nav>
+        </header>
 
         <div className="relative z-10 w-full max-w-2xl mx-auto px-6 flex flex-col items-center gap-6 mt-6 pb-20">
           <motion.div
@@ -689,9 +686,9 @@ export default function Home() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-black text-slate-800 leading-tight drop-shadow-sm">
-              Upload Your Resume
-            </h2>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-800 leading-tight drop-shadow-sm">
+              Rank Your Resume Instantly
+            </h1>
             <AnimatePresence mode="wait">
               <motion.p
                 key={penguinState}
@@ -1022,11 +1019,67 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-3 left-0 right-0 text-center z-20">
+        <section className="w-full max-w-4xl mx-auto px-6 mt-16 pb-20 z-10">
+          <h2 className="text-3xl font-black text-slate-800 mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              {
+                q: "What is Skill Rank?",
+                a: "Skill Rank is an AI-powered resume analysis tool that helps you rank your resume against industry standards and optimize it for ATS (Applicant Tracking Systems)."
+              },
+              {
+                q: "How does the resume ranking work?",
+                a: "Our advanced AI analyzes your skills, experience, and keywords to provide a detailed score and actionable feedback based on current market trends."
+              },
+              {
+                q: "Is my resume data secure?",
+                a: "Yes, we use bank-grade encryption to ensure your personal data is protected. Resumes are processed securely and never shared with third parties."
+              },
+              {
+                q: "How can I improve my resume rank?",
+                a: "Skill Rank provides specific recommendations on keywords, formatting, and skill gaps to help you climb the rankings and land more interviews."
+              }
+            ].map((faq, i) => (
+              <article key={i} className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/80 shadow-sm">
+                <h3 className="font-bold text-slate-800 mb-2">{faq.q}</h3>
+                <p className="text-slate-600 text-sm">{faq.a}</p>
+              </article>
+            ))}
+          </div>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "What is Skill Rank?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Skill Rank is an AI-powered resume analysis tool that helps you rank your resume against industry standards."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How does the resume ranking work?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Our advanced AI analyzes your skills, experience, and keywords to provide a detailed score."
+                    }
+                  }
+                ]
+              })
+            }}
+          />
+        </section>
+
+        <footer className="w-full py-8 text-center z-20">
           <p className="text-slate-400 font-medium text-xs">
-            © 2024 SkillRank · No penguins were permanently harmed (upload your resume to save one)
+            © 2024 SkillRank · Part of the Mastery Nexus™ Ecosystem · No penguins were permanently harmed.
           </p>
-        </div>
+        </footer>
       </main>
     </>
   );
