@@ -379,7 +379,7 @@ function DeathScreen({ onReload }: { onReload: () => void }) {
 
         <div>
           <h2 className="text-4xl font-black text-slate-800 mb-1">RIP 🐧 The Penguin</h2>
-          <p className="text-slate-500 text-sm font-mono bg-slate-100 py-1 px-3 rounded-full inline-block">2024 – 2024 · Died waiting for a PDF</p>
+          <p className="text-slate-500 text-sm font-mono bg-slate-100 py-1 px-3 rounded-full inline-block">2026 – 2026 · Died waiting for a PDF</p>
         </div>
 
         <AnimatePresence mode="wait">
@@ -478,11 +478,11 @@ export default function Home() {
     idleTimerRef.current = setInterval(() => {
       seconds++;
 
-      if (seconds === 8) {
+      if (seconds === 40) {
         setPenguinState("waiting");
       }
 
-      if (seconds === 16) {
+      if (seconds === 80) {
         setPenguinState("walking");
         startWalkMessages();
 
@@ -495,7 +495,7 @@ export default function Home() {
 
         let wp = 0;
         walkTimerRef.current = setInterval(() => {
-          wp += 1.2;
+          wp += 0.5;
           setWalkProgress(Math.min(wp, 100));
 
           if (wp >= 100) {
