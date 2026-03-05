@@ -18,6 +18,8 @@ interface TestState {
 
 interface Results {
   score: number;
+  maxScore: number;
+  percentage: number;
   percentile: number;
   swotAnalysis: {
     strengths: string[];
@@ -38,17 +40,17 @@ interface Store {
   uploadId: string | null;
   setUploadStatus: (status: "idle" | "uploading" | "parsing" | "ready") => void;
   setUploadId: (id: string) => void;
-  
+
   // Test
   test: TestState;
   setQuestions: (questions: Question[]) => void;
   setAnswer: (index: number, answerId: string) => void;
   nextQuestion: () => void;
-  
+
   // Results
   results: Results | null;
   setResults: (results: Results) => void;
-  
+
   // User
   user: User | null;
   setUser: (user: User) => void;
@@ -84,7 +86,7 @@ export const useStore = create<Store>((set) => ({
   uploadId: null,
   setUploadStatus: (status) => set({ uploadStatus: status }),
   setUploadId: (id) => set({ uploadId: id }),
-  
+
   // Test
   test: createTestSlice(set),
   setQuestions: (questions) => set((state) => ({
@@ -105,11 +107,11 @@ export const useStore = create<Store>((set) => ({
       )
     }
   })),
-  
+
   // Results
   results: null,
   setResults: (results) => set({ results }),
-  
+
   // User
   user: null,
   setUser: (user) => set({ user }),

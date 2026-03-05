@@ -345,9 +345,9 @@ function FloatingMotivation({ messages, color }: { messages: string[]; color: st
 }
 
 // ─── Score Ring ───────────────────────────────────────────────────────────────
-function ScoreRing({ score, semanticColor }: { score: number; semanticColor: string }) {
+function ScoreRing({ score, maxScore, percentage, semanticColor }: { score: number; maxScore: number; percentage: number; semanticColor: string }) {
   const circumference = 2 * Math.PI * 54;
-  const strokeDash = (score / 100) * circumference;
+  const strokeDash = (percentage / 100) * circumference;
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: 160, height: 160 }}>
@@ -374,8 +374,8 @@ function ScoreRing({ score, semanticColor }: { score: number; semanticColor: str
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
         >
-          <div className="text-5xl font-black text-slate-800 leading-none">{score}</div>
-          <div className="text-xs font-bold mt-1" style={{ color: semanticColor }}>/ 100</div>
+          <div className="text-5xl font-black text-slate-800 leading-none">{percentage}%</div>
+          <div className="text-xs font-bold mt-1" style={{ color: semanticColor }}>{score} / {maxScore}</div>
         </motion.div>
       </div>
     </div>
@@ -383,10 +383,12 @@ function ScoreRing({ score, semanticColor }: { score: number; semanticColor: str
 }
 
 // ─── Certificate Modal Component ─────────────────────────────────────────────
-function CertificateModal({ isOpen, onClose, score, percentile, companyName }: {
+function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percentile, companyName }: {
   isOpen: boolean;
   onClose: () => void;
   score: number;
+  maxScore: number;
+  percentage: number;
   percentile: number;
   companyName: string;
 }) {
@@ -485,8 +487,8 @@ function CertificateModal({ isOpen, onClose, score, percentile, companyName }: {
 
                 <div className="flex justify-center gap-8 py-4">
                   <div className="text-center">
-                    <p className="text-4xl font-black text-amber-400">{score}</p>
-                    <p className="text-sm text-slate-400">Final Score</p>
+                    <p className="text-4xl font-black text-amber-400">{percentage}%</p>
+                    <p className="text-sm text-slate-400">Score ({score}/{maxScore})</p>
                   </div>
                   <div className="w-px h-12 bg-white/10" />
                   <div className="text-center">
@@ -566,6 +568,8 @@ export default function ResultsDashboard() {
   }, []);
 
   const score = results?.score || 0;
+  const maxScore = results?.maxScore || 0;
+  const percentage = results?.percentage || 0;
   const percentile = results?.percentile || 0;
 
   const swot = {
@@ -575,9 +579,9 @@ export default function ResultsDashboard() {
     threats: results?.swotAnalysis?.threats ?? [],
   };
 
-  const isGood = score >= 70;
-  const isMid = score >= 40 && score < 70;
-  const isBad = score < 40;
+  const isGood = percentage >= 70;
+  const isMid = percentage >= 40 && percentage < 70;
+  const isBad = percentage < 40;
 
   // Semantic color represents the score performance (kept constant regardless of app theme)
   const semanticColor = isGood ? "#10b981" : isMid ? "#f59e0b" : "#ef4444";
@@ -586,7 +590,7 @@ export default function ResultsDashboard() {
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
   const shareRank = async () => {
-    const text = `I scored ${score}/100 and I'm in the top ${100 - percentile}% of Devs on my stack! 🚀`;
+    const text = `I scored ${percentage}% (${score}/${maxScore}) and I'm in the top ${100 - percentile}% of Devs on my stack! 🚀`;
     const url = window.location.origin;
     const fullText = `${text} ${url}`;
 
@@ -721,7 +725,7 @@ export default function ResultsDashboard() {
 
                 {/* Score ring */}
                 <div className="flex-shrink-0">
-                  <ScoreRing score={score} semanticColor={semanticColor} />
+                  <ScoreRing score={score} maxScore={maxScore} percentage={percentage} semanticColor={semanticColor} />
                 </div>
 
                 {/* Score info + characters */}
@@ -741,7 +745,7 @@ export default function ResultsDashboard() {
                       Top <span style={{ color: semanticColor }}>{100 - percentile}%</span>
                     </h2>
                     <p className="text-slate-600 font-semibold text-lg mb-2">
-                      You scored <strong className="text-slate-800">{score}/100</strong> on your custom tech stack test.
+                      You scored <strong className="text-slate-800">{percentage}%</strong> ({score}/{maxScore}) on your custom tech stack test.
                     </p>
                     <p className="text-slate-500 text-sm font-medium">
                       {isGood
@@ -982,6 +986,8 @@ export default function ResultsDashboard() {
             isOpen={showCertificate}
             onClose={() => setShowCertificate(false)}
             score={score}
+            maxScore={maxScore}
+            percentage={percentage}
             percentile={percentile}
             companyName={COMPANY_NAME}
           />
