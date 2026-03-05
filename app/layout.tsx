@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     template: "%s | Skill Rank",
   },
   description: "Rank your resume, analyze your skills, and get professional feedback to land your dream job. Use Skill Rank's AI-powered assessment tool today.",
+  verification: {
+    google: [
+      "TsnXXwEoCqOXmCh4OZabYtjU0cV9B8trJPo1rHk0-Yc",
+      "googled50787fd1293d642"
+    ],
+  },
   keywords: ["rank your resume", "resume analysis", "skill assessment", "career growth", "job search", "AI resume checker", "Skill Rank", "Mastery Nexus"],
   authors: [{ name: "Mastery Nexus" }],
   creator: "Mastery Nexus",
