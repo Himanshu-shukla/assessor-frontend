@@ -2,6 +2,7 @@ import { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
+import JsonLd from "@/components/SEO/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://masterynexus.com"),
   title: {
     default: "Skill Rank | Professional Resume Ranking & Analysis",
     template: "%s | Skill Rank",
@@ -46,13 +48,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Skill Rank branding",
+        alt: "Skill Rank | AI-Powered Resume Analysis",
       },
     ],
   },
   icons: {
     icon: "/favicon.png",
-    apple: "/favicon.png",
+    apple: "/apple-touch-icon.png",
   },
   twitter: {
     card: "summary_large_image",
@@ -83,34 +85,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Skill Rank",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Web",
-    "description": "AI-powered resume ranking and skill analysis tool.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0", // Update if you have paid tiers
-      "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "1250" // Example data
-    }
-  };
-
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* Inject JSON-LD Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd />
         <ClientLayout>
           {children}
         </ClientLayout>

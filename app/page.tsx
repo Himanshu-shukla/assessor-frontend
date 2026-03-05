@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import FaqJsonLd from "@/components/SEO/FaqJsonLd";
 import {
   UploadCloud,
   ArrowRight,
@@ -936,19 +938,19 @@ export default function Home() {
                       <div className="grid gap-6">
 
                         {/* FREE TEST */}
-                        <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                          onClick={() => router.push(`/test/${uploadId}`)}
-                        >
-                          <h4 className="text-xl font-bold mb-2">
-                            🧪 Free Skill Test
-                          </h4>
-                          <p className="text-slate-500">
-                            MCQ-based skill assessment generated from your resume.
-                          </p>
-                          <Badge className="mt-3 bg-green-100 text-green-700 hover:bg-green-200">
-                            Free
-                          </Badge>
-                        </Card>
+                        <Link href={`/test/${uploadId}`} className="block">
+                          <Card className="p-6 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.01]">
+                            <h4 className="text-xl font-bold mb-2">
+                              🧪 Free Skill Test
+                            </h4>
+                            <p className="text-slate-500">
+                              MCQ-based skill assessment generated from your resume.
+                            </p>
+                            <Badge className="mt-3 bg-green-100 text-green-700 hover:bg-green-200">
+                              Free
+                            </Badge>
+                          </Card>
+                        </Link>
 
                         {/* AI ANALYSIS */}
                         <Card className="p-6 cursor-pointer hover:shadow-lg border-2 border-indigo-200 transition-shadow"
@@ -1046,33 +1048,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": [
-                  {
-                    "@type": "Question",
-                    "name": "What is Skill Rank?",
-                    "acceptedAnswer": {
-                      "@type": "Answer",
-                      "text": "Skill Rank is an AI-powered resume analysis tool that helps you rank your resume against industry standards."
-                    }
-                  },
-                  {
-                    "@type": "Question",
-                    "name": "How does the resume ranking work?",
-                    "acceptedAnswer": {
-                      "@type": "Answer",
-                      "text": "Our advanced AI analyzes your skills, experience, and keywords to provide a detailed score."
-                    }
-                  }
-                ]
-              })
-            }}
-          />
+          <FaqJsonLd />
         </section>
 
         <footer className="w-full py-8 text-center z-20">
