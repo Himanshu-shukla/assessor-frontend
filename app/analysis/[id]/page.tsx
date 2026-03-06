@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Linkedin } from "lucide-react";
+import { useStore } from "@/store/useStore";
 import {
     RadarChart,
     Radar,
@@ -181,6 +182,7 @@ export default function AnalysisPage() {
     const params = useParams();
     const id = params?.id as string;
     const router = useRouter();
+    const setUploadStatus = useStore((state) => state.setUploadStatus);
 
     const [loading, setLoading] = useState(true);
     const [report, setReport] = useState<AIReport | null>(null);
@@ -290,7 +292,10 @@ export default function AnalysisPage() {
                             </div>
                         </div>
 
-                        <button onClick={() => router.push("/")}
+                        <button onClick={() => {
+                            setUploadStatus("idle");
+                            router.push("/");
+                        }}
                             className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-bold hover:bg-slate-50 transition-colors shadow-sm">
                             <ArrowLeft className="w-4 h-4" />
                             <span className="hidden sm:inline">Back</span>
@@ -334,7 +339,7 @@ export default function AnalysisPage() {
                                     {/* Desktop LinkedIn Share Button */}
                                     <button
                                         onClick={shareToLinkedIn}
-                                        title="Share on LinkedIn"
+                                        title="Share"
                                         className="absolute top-5 right-5 p-2.5 rounded-full bg-[#0A66C2] text-white hover:bg-[#084b8a] transition-all duration-300 shadow-sm group z-10 hidden sm:flex items-center gap-2 cursor-pointer"
                                     >
                                         <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -351,7 +356,7 @@ export default function AnalysisPage() {
                                         {isCopied ? (
                                             <span className="text-[10px] font-bold px-1">Copied!</span>
                                         ) : (
-                                            <><Linkedin className="w-4 h-4" />Share on LinkedIn</>
+                                            <><Linkedin className="w-4 h-4" />Share</>
                                         )}
                                     </button>
 
@@ -431,7 +436,10 @@ export default function AnalysisPage() {
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                                    <button onClick={() => router.push("/")}
+                                    <button onClick={() => {
+                                        setUploadStatus("idle");
+                                        router.push("/");
+                                    }}
                                         className="px-6 py-3.5 rounded-full border border-slate-200 bg-white text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm">
                                         Upload Another
                                     </button>

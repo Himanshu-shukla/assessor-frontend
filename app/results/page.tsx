@@ -687,7 +687,7 @@ export default function ResultsDashboard() {
               onClick={shareToLinkedIn}
               className="w-full md:w-auto bg-[#0a66c2] hover:bg-[#004182] text-white shadow-lg shadow-blue-500/20 transition-all font-bold"
             >
-              <Linkedin className="w-4 h-4 mr-2" /> Share on LinkedIn
+              <Linkedin className="w-4 h-4 mr-2" /> Share
             </Button>
           </div>
         </motion.div>

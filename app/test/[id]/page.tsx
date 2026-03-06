@@ -260,7 +260,7 @@ export default function TestPage() {
         const questionsArray = data.questions || data;
         
         if (!questionsArray || questionsArray.length === 0) {
-           setError("No questions found for this assessment.");
+           setError("We couldn't detect sufficient technical skills in your resume to generate a customized test. Please try uploading a more detailed resume.");
            return;
         }
 

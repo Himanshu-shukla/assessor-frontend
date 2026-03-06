@@ -10,6 +10,7 @@ import {
   Loader2,
   CheckCircle,
   RefreshCw,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -132,7 +133,7 @@ const sadJokes = [
   "Gone too soon. Taken by the mountain. No resume was worth it. 💔",
 ];
 
-// ─── Mountain SVG — supports "crashed" state ─────────────────────────────────
+// ─── Mountain SVG ────────────────────────────────────────────────────────────
 function Mountain({ crashed }: { crashed: boolean }) {
   return (
     <svg viewBox="0 0 320 200" width="200" height="130" className="flex-shrink-0">
@@ -434,6 +435,9 @@ export default function Home() {
   const { uploadStatus, setUploadStatus, setUploadId, setUser, uploadId } = useStore();
   const [progress, setProgress] = useState(0);
 
+  // NEW: Error state
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   // Theme Cycler State
   const [themeIndex, setThemeIndex] = useState(0);
   const activeTheme = themes[themeIndex];
@@ -541,7 +545,25 @@ export default function Home() {
   );
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[], fileRejections: any[]) => {
+      // 1. Check for rejected files (wrong type or too large)
+      if (fileRejections.length > 0) {
+        const { errors } = fileRejections[0];
+        if (errors[0].code === "file-invalid-type") {
+          setUploadError("Invalid file type. Please upload a PDF file. 🚫");
+        } else if (errors[0].code === "file-too-large") {
+          setUploadError("File is too large. Max size is 5MB. 📦");
+        } else {
+          setUploadError("Invalid file. Please try again. 🚫");
+        }
+        return;
+      }
+
+      // Clear any previous errors
+      setUploadError(null);
+
+      if (acceptedFiles.length === 0) return;
+
       if (idleTimerRef.current) clearInterval(idleTimerRef.current);
       if (walkTimerRef.current) clearInterval(walkTimerRef.current);
       if (walkMsgTimerRef.current) clearInterval(walkMsgTimerRef.current);
@@ -563,10 +585,11 @@ export default function Home() {
         setUploadStatus("parsing");
         pollStatus(data.assessmentId);
 
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
         setUploadStatus("idle");
         setPenguinState("idle");
+        setUploadError(err.response?.data?.error || "An error occurred during upload. Please try again.");
       }
     },
     [setUploadStatus, setUploadId, pollStatus]
@@ -584,10 +607,12 @@ export default function Home() {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  // UPDATED: Added max size limit and extracting isDragReject
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] },
     maxFiles: 1,
+    maxSize: 5242880, // 5MB
   });
 
   const handleContinue = () => {
@@ -602,6 +627,7 @@ export default function Home() {
     setWalkProgress(0);
     setUploadStatus("idle");
     setProgress(0);
+    setUploadError(null);
   };
 
   function SnowBackground({ snowClass }: { snowClass: string }) {
@@ -662,22 +688,22 @@ export default function Home() {
         <SnowBackground snowClass={activeTheme.snowText} />
 
         <header
-          className="w-full max-w-6xl mx-auto flex items-center justify-between px-8 py-6 z-20 relative"
+          className="w-full max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-8 py-6 z-20 relative"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100">
-              <span className="text-3xl leading-none">🐧</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100 flex-shrink-0">
+              <span className="text-2xl sm:text-3xl leading-none">🐧</span>
             </div>
             <div>
-              <p className="text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
+              <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight transition-colors duration-500">
                 Skill<span className={activeTheme.brandText}>{" Rank"}</span>
               </p>
-              <p className="text-xs text-slate-500 font-medium">Powered by Mastery Nexus™</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Powered by Mastery Nexus™</p>
             </div>
           </div>
-          <nav className="flex gap-3">
-            <Badge className={`bg-white shadow-sm text-xs py-1 px-3 transition-colors duration-500 border ${activeTheme.badge1}`}>🔒 Secure</Badge>
-            <Badge className={`bg-white shadow-sm text-xs py-1 px-3 transition-colors duration-500 border ${activeTheme.badge2}`}>⚡ Fast</Badge>
+          <nav className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
+            <Badge className={`bg-white shadow-sm text-[10px] sm:text-xs py-1 px-2 sm:px-3 transition-colors duration-500 border ${activeTheme.badge1}`}>🔒 Secure</Badge>
+            <Badge className={`bg-white shadow-sm text-[10px] sm:text-xs py-1 px-2 sm:px-3 transition-colors duration-500 border ${activeTheme.badge2}`}>⚡ Fast</Badge>
           </nav>
         </header>
 
@@ -712,7 +738,7 @@ export default function Home() {
                   </span>
                 )}
                 {penguinState === "walking" && (
-                  <span className="text-red-500 font-bold bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                  <span className="text-red-500 font-bold px-3 py-1 rounded-full">
                     🚨 THE PENGUIN HAS LEFT THE BUILDING! UPLOAD NOW!
                   </span>
                 )}
@@ -722,7 +748,7 @@ export default function Home() {
                   </span>
                 )}
                 {penguinState === "happy" && (
-                  <span className={`font-bold px-3 py-1 rounded-full border transition-colors duration-500 bg-white ${activeTheme.badge1}`}>
+                  <span className={`font-bold px-3 py-1 rounded-full transition-colors duration-500 ${activeTheme.badge1}`}>
                     🎉 The penguin is thrilled! Processing your resume...
                   </span>
                 )}
@@ -730,7 +756,7 @@ export default function Home() {
             </AnimatePresence>
           </motion.div>
 
-          {/* ─── PENGUIN SCENE (Moved directly above the Dropzone) ──────── */}
+          {/* ─── PENGUIN SCENE ──────── */}
           <div className="relative w-full h-28 mt-2 mb-[-0.5rem] pointer-events-none z-20">
             {/* Ground */}
             <svg
@@ -843,19 +869,21 @@ export default function Home() {
                 boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(255,255,255,0.5) inset",
               }}
             >
-              <CardContent className="p-6 md:p-8">
+              <CardContent className="px-6 md:px-8">
                 <AnimatePresence mode="wait">
                   {uploadStatus === "idle" && (
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <div
                         {...getRootProps()}
-                        className={`relative border-2 border-dashed rounded-3xl p-10 cursor-pointer transition-all duration-500 text-center bg-white/50 ${isDragActive
-                          ? activeTheme.dropzoneActive + " scale-[1.02]"
-                          : penguinState === "walking"
-                            ? "border-red-300 bg-red-50 hover:bg-red-100 animate-pulse"
-                            : penguinState === "dead"
-                              ? "border-slate-300 bg-slate-50 hover:bg-slate-100"
-                              : `border-slate-300 hover:bg-white/80 ${activeTheme.dropzoneHover}`
+                        className={`relative border-2 border-dashed rounded-3xl p-10 cursor-pointer transition-all duration-500 text-center bg-white/50 ${isDragReject
+                          ? "border-red-500 bg-red-50 shadow-red-100 scale-[1.02]"
+                          : isDragActive
+                            ? activeTheme.dropzoneActive + " scale-[1.02]"
+                            : penguinState === "walking"
+                              ? "border-red-300 bg-red-50 hover:bg-red-100 animate-pulse"
+                              : penguinState === "dead"
+                                ? "border-slate-300 bg-slate-50 hover:bg-slate-100"
+                                : `border-slate-300 hover:bg-white/80 ${activeTheme.dropzoneHover}`
                           }`}
                       >
                         <input {...getInputProps()} />
@@ -869,28 +897,39 @@ export default function Home() {
                           className="mb-6"
                         >
                           <div
-                            className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl transition-all duration-500 ${penguinState === "walking"
-                              ? "bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/30"
-                              : penguinState === "dead"
-                                ? "bg-gradient-to-br from-slate-400 to-slate-600 shadow-slate-400/30"
-                                : activeTheme.iconBg
+                            className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl transition-all duration-500 ${isDragReject
+                              ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-400/30"
+                              : penguinState === "walking"
+                                ? "bg-gradient-to-br from-red-500 to-orange-500 shadow-red-500/30"
+                                : penguinState === "dead"
+                                  ? "bg-gradient-to-br from-slate-400 to-slate-600 shadow-slate-400/30"
+                                  : activeTheme.iconBg
                               }`}
                           >
                             <UploadCloud className="w-10 h-10 text-white" />
                           </div>
                         </motion.div>
 
-                        {isDragActive ? (
+                        {isDragReject ? (
+                          <p className="text-xl font-bold text-red-600 mb-2">PDF files only, please! 🚫</p>
+                        ) : isDragActive ? (
                           <p className={`text-xl font-bold transition-colors ${activeTheme.brandText}`}>Drop it like it&apos;s 🔥 hot!</p>
                         ) : (
                           <>
-                            <p className={`text-xl font-bold mb-2 ${penguinState === 'walking' ? 'text-red-600' : 'text-slate-800'}`}>
-                              {penguinState === "walking"
-                                ? "🆘 UPLOAD NOW to stop the penguin!"
-                                : penguinState === "dead"
-                                  ? "🪦 Upload to summon a new penguin"
-                                  : "Drag & drop your resume here"}
-                            </p>
+                            {uploadError ? (
+                              <p className="text-xl font-bold text-red-600 mb-2 animate-bounce">
+                                {uploadError}
+                              </p>
+                            ) : (
+                              <p className={`text-xl font-bold mb-2 ${penguinState === 'walking' ? 'text-red-600' : 'text-slate-800'}`}>
+                                {penguinState === "walking"
+                                  ? "🆘 UPLOAD NOW to stop the penguin!"
+                                  : penguinState === "dead"
+                                    ? "🪦 Upload to summon a new penguin"
+                                    : "Drag & drop your resume here"}
+                              </p>
+                            )}
+
                             <p className="text-slate-500 text-sm mb-6 font-medium">
                               or{" "}
                               <span className={`font-bold underline underline-offset-4 transition-colors duration-500 ${activeTheme.brandText} ${activeTheme.brandTextHover}`}>
@@ -898,8 +937,8 @@ export default function Home() {
                               </span>
                             </p>
                             <div className="flex justify-center gap-3">
-                              <Badge className="bg-slate-100 text-slate-600 border border-slate-200 text-xs py-1 hover:bg-slate-200 shadow-sm transition-colors">PDF only</Badge>
-                              <Badge className="bg-slate-100 text-slate-600 border border-slate-200 text-xs py-1 hover:bg-slate-200 shadow-sm transition-colors">Max 5MB</Badge>
+                              <Badge className={`${uploadError || isDragReject ? 'bg-red-100 text-red-600 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'} border text-xs py-1 hover:bg-slate-200 shadow-sm transition-colors`}>PDF only</Badge>
+                              <Badge className={`${uploadError?.includes("large") ? 'bg-red-100 text-red-600 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'} border text-xs py-1 hover:bg-slate-200 shadow-sm transition-colors`}>Max 5MB</Badge>
                               <Badge className="bg-slate-100 text-slate-600 border border-slate-200 text-xs py-1 hover:bg-slate-200 shadow-sm transition-colors">Encrypted</Badge>
                             </div>
                           </>
@@ -929,42 +968,61 @@ export default function Home() {
                   )}
 
                   {uploadStatus === "ready" && (
-                    <motion.div className="text-center py-10">
-
+                    <motion.div className="text-center py-4">
                       <h3 className="text-3xl font-black mb-6">
                         🎯 Choose Your Evaluation Type
                       </h3>
 
-                      <div className="grid gap-6">
+                      <div className="grid gap-6 md:grid-cols-2">
 
                         {/* FREE TEST */}
-                        <Link href={`/test/${uploadId}`} className="block">
-                          <Card className="p-6 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.01]">
-                            <h4 className="text-xl font-bold mb-2">
-                              🧪 Free Skill Test
-                            </h4>
-                            <p className="text-slate-500">
-                              MCQ-based skill assessment generated from your resume.
+                        <Link href={`/test/${uploadId}`} className="block h-full">
+                          <Card className="h-full p-8 cursor-pointer hover:shadow-2xl transition-all hover:-translate-y-1 bg-gradient-to-br from-white to-green-50/50 border-2 border-green-200/60 shadow-lg shadow-green-100/30">
+                            <div className="flex items-center gap-4 mb-3">
+                              <div className="p-3 bg-green-100 rounded-xl">
+                                <span className="text-2xl">🧪</span>
+                              </div>
+                              <h4 className="text-2xl font-black text-slate-800">
+                                Free Skill Test
+                              </h4>
+                            </div>
+                            <p className="text-slate-600 font-medium text-lg leading-relaxed mb-4 text-left">
+                              Dynamic MCQ-based skill assessment generated instantly from your resume.
                             </p>
-                            <Badge className="mt-3 bg-green-100 text-green-700 hover:bg-green-200">
-                              Free
-                            </Badge>
+                            <div className="text-left">
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border border-green-200 px-3 py-1 text-sm shadow-sm pointer-events-none">
+                                Free Forever
+                              </Badge>
+                            </div>
                           </Card>
                         </Link>
 
                         {/* AI ANALYSIS */}
-                        <Card className="p-6 cursor-pointer hover:shadow-lg border-2 border-indigo-200 transition-shadow"
+                        <Card className="h-full p-8 cursor-pointer hover:shadow-2xl transition-all hover:-translate-y-1 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-indigo-200 shadow-lg shadow-indigo-100/30 relative overflow-hidden group"
                           onClick={handleAIAnalysis}
                         >
-                          <h4 className="text-xl font-bold mb-2">
-                            🤖 AI Resume Analysis
-                          </h4>
-                          <p className="text-slate-500">
-                            Deep resume scoring, career insights & improvement roadmap.
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
+                            <Sparkles className="w-32 h-32" />
+                          </div>
+                          <div className="flex items-center gap-4 mb-3 relative z-10">
+                            <div className="p-3 bg-indigo-100 rounded-xl shadow-inner border border-indigo-50">
+                              <span className="text-2xl">🤖</span>
+                            </div>
+                            <h4 className="text-2xl font-black text-slate-800">
+                              AI Resume Analysis
+                            </h4>
+                          </div>
+                          <p className="text-slate-600 font-medium text-lg leading-relaxed mb-4 relative z-10 text-left">
+                            Deep resume scoring, career insights, ATS readiness, & improvement roadmap.
                           </p>
-                          <Badge className="mt-3 bg-indigo-100 text-indigo-700 hover:bg-indigo-200">
-                            AI Powered
-                          </Badge>
+                          <div className="flex gap-2 relative z-10 text-left">
+                            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 border-none px-3 py-1 text-sm shadow-md pointer-events-none">
+                              Premium AI
+                            </Badge>
+                            <Badge className="bg-white text-indigo-700 border border-indigo-200 px-3 py-1 text-sm shadow-sm pointer-events-none">
+                              Recommended
+                            </Badge>
+                          </div>
                         </Card>
 
                       </div>
@@ -992,9 +1050,6 @@ export default function Home() {
                 repeat: Infinity,
               }}
             >
-              {/* We duplicate the array so that when the first half scrolls out of view, 
-      the second half perfectly takes its place, creating a seamless loop.
-    */}
               {[
                 { icon: "🏆", text: "10,000+ Analyzed" },
                 { icon: "🌍", text: "45+ Countries" },
@@ -1021,7 +1076,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="w-full max-w-4xl mx-auto px-6 mt-16 pb-20 z-10">
+        <section className="w-full max-w-4xl mx-auto px-6 pb-20 z-10">
           <h2 className="text-3xl font-black text-slate-800 mb-8 text-center">Frequently Asked Questions</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {[
