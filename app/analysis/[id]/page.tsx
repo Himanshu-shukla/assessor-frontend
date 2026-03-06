@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Linkedin } from "lucide-react";
+import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Share2 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import {
     RadarChart,
@@ -239,26 +239,32 @@ export default function AnalysisPage() {
         fullMark: 10,
     }));
 
-    // ─── LINKEDIN SHARE FUNCTION (OG IMAGE ARCHITECTURE) ──────────────────────
-    const shareToLinkedIn = async () => {
+    // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
+    const handleShare = async () => {
         const shareUrl = window.location.href;
-        const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀\n\nCheck out my detailed breakdown and test your own skills here:\n${shareUrl}`;
+        const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀`;
 
+        // Use native share sheet if available (Android / iOS)
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: "My AI Resume Analysis", text, url: shareUrl });
+                return;
+            } catch (err) {
+                // User dismissed — do nothing
+                return;
+            }
+        }
+
+        // Fallback: copy to clipboard (desktop)
         try {
-            // 1. Silently copy text to clipboard
-            await navigator.clipboard.writeText(text);
-
-            // 2. Show "Copied!" on the button for 2.5 seconds
-            setIsCopied(true);
-            setTimeout(() => setIsCopied(false), 2500);
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(`${text}\n${shareUrl}`);
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2500);
+            }
         } catch (err) {
             console.error("Failed to copy text:", err);
         }
-
-        // 3. Open LinkedIn Feed with the create post box triggered
-        const encodedText = encodeURIComponent(text);
-        const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`;
-        window.open(linkedinUrl, "_blank");
     };
 
     return (
@@ -336,27 +342,27 @@ export default function AnalysisPage() {
                                 <div id="score-card" className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative flex flex-col h-full w-full">
                                     <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(90deg,${scoreHex},${scoreHex}60)` }} />
 
-                                    {/* Desktop LinkedIn Share Button */}
+                                    {/* Desktop Share Button */}
                                     <button
-                                        onClick={shareToLinkedIn}
+                                        onClick={handleShare}
                                         title="Share"
-                                        className="absolute top-5 right-5 p-2.5 rounded-full bg-[#0A66C2] text-white hover:bg-[#084b8a] transition-all duration-300 shadow-sm group z-10 hidden sm:flex items-center gap-2 cursor-pointer"
+                                        className="absolute top-5 right-5 p-2.5 rounded-full bg-slate-800 text-white hover:bg-slate-700 transition-all duration-300 shadow-sm group z-10 hidden sm:flex items-center gap-2 cursor-pointer"
                                     >
-                                        <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                        <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                         <span className="text-xs font-bold font-body tracking-wide pr-1">
-                                            {isCopied ? "Copied!" : "Share on  LinkedIn"}
+                                            {isCopied ? "Copied!" : "Share"}
                                         </span>
                                     </button>
 
-                                    {/* Mobile LinkedIn Share Button */}
+                                    {/* Mobile Share Button */}
                                     <button
-                                        onClick={shareToLinkedIn}
-                                        className="absolute top-4 right-4 p-2 rounded-full bg-[#0A66C2] text-white hover:bg-[#084b8a] sm:hidden z-10 shadow-sm cursor-pointer transition-all"
+                                        onClick={handleShare}
+                                        className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 text-white hover:bg-slate-700 sm:hidden z-10 shadow-sm cursor-pointer transition-all"
                                     >
                                         {isCopied ? (
                                             <span className="text-[10px] font-bold px-1">Copied!</span>
                                         ) : (
-                                            <><Linkedin className="w-4 h-4" />Share</>
+                                            <Share2 className="w-4 h-4" />
                                         )}
                                     </button>
 

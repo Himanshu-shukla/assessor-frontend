@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   TrendingUp, AlertTriangle, Zap, Target, Award, Download, X,
-  Loader2, Linkedin
+  Loader2, Share2
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -271,30 +271,39 @@ function MidCharacter({ index }: { index: number }) {
 // ─── Confetti particles (good score) ─────────────────────────────────────────
 function Confetti() {
   const colors = ["#fbbf24", "#f472b6", "#34d399", "#60a5fa", "#a78bfa", "#fb923c"];
+  const [particles, setParticles] = useState<{ left: number; width: number; height: number; rotate: number; x: number; duration: number; delay: number }[]>([]);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 30 }, () => ({
+        left: Math.random() * 100,
+        width: 6 + Math.random() * 8,
+        height: 6 + Math.random() * 8,
+        rotate: 360 * (Math.random() > 0.5 ? 1 : -1),
+        x: (Math.random() - 0.5) * 80,
+        duration: 3 + Math.random() * 3,
+        delay: Math.random() * 4,
+      }))
+    );
+  }, []);
+
+  if (particles.length === 0) return null;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {[...Array(30)].map((_, i) => (
+      {particles.map((p, i) => (
         <motion.div
           key={i}
           className="absolute rounded-sm drop-shadow-sm"
           style={{
-            left: `${Math.random() * 100}%`,
+            left: `${p.left}%`,
             top: "-10px",
-            width: `${6 + Math.random() * 8}px`,
-            height: `${6 + Math.random() * 8}px`,
+            width: `${p.width}px`,
+            height: `${p.height}px`,
             background: colors[i % colors.length],
           }}
-          animate={{
-            y: ["0vh", "110vh"],
-            rotate: [0, 360 * (Math.random() > 0.5 ? 1 : -1)],
-            x: [0, (Math.random() - 0.5) * 80],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 4,
-            ease: "linear",
-          }}
+          animate={{ y: ["0vh", "110vh"], rotate: [0, p.rotate], x: [0, p.x] }}
+          transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "linear" }}
         />
       ))}
     </div>
@@ -551,6 +560,39 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
 
 const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "SkillRank AI";
 
+// ─── Sad emoji rain (bad score) ───────────────────────────────────────────────
+function SadRain() {
+  const [drops, setDrops] = useState<{ left: number; duration: number; delay: number }[]>([]);
+
+  useEffect(() => {
+    setDrops(
+      Array.from({ length: 12 }, () => ({
+        left: Math.random() * 100,
+        duration: 4 + Math.random() * 4,
+        delay: Math.random() * 6,
+      }))
+    );
+  }, []);
+
+  if (drops.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {drops.map((d, i) => (
+        <motion.div
+          key={i}
+          className="absolute text-2xl select-none opacity-60 drop-shadow-sm"
+          style={{ left: `${d.left}%`, top: "-20px" }}
+          animate={{ y: ["0vh", "110vh"], opacity: [1, 0.5, 0] }}
+          transition={{ duration: d.duration, repeat: Infinity, delay: d.delay, ease: "linear" }}
+        >
+          {["😢", "💔", "📉", "😭", "🥲"][i % 5]}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Results Dashboard ───────────────────────────────────────────────────
 export default function ResultsDashboard() {
   const { results } = useStore();
@@ -589,36 +631,34 @@ export default function ResultsDashboard() {
   const motMessages = isGood ? goodMessages : isMid ? midMessages : badMessages;
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
-  // ─── NEW LINKEDIN SHARE FUNCTION ──────────────────────────────────────────
-  const shareToLinkedIn = async () => {
-    // 1. Create the text you want them to post
-    const text = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀\n\nCheck your own rank here: ${window.location.origin}`;
+  // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
+  const [shareLabel, setShareLabel] = useState<"share" | "copied">("share");
 
-    // 2. Try to copy it to their clipboard so they can easily paste it if the pre-fill fails
-    try {
-      await navigator.clipboard.writeText(text);
+  const handleShare = async () => {
+    const text = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀`;
+    const url = window.location.origin;
 
-      // Briefly change button text to show success
-      const shareButton = document.getElementById('linkedin-share-btn');
-      if (shareButton) {
-        const originalHtml = shareButton.innerHTML;
-        shareButton.innerHTML = '✓ Copied to clipboard!';
-        setTimeout(() => {
-          shareButton.innerHTML = originalHtml;
-        }, 2000);
+    // Use native share sheet if available (Android / iOS)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My SkillRank Result", text, url });
+        return;
+      } catch (err) {
+        // User dismissed — do nothing
+        return;
       }
-    } catch (err) {
-      console.error("Failed to copy:", err);
     }
 
-    // 3. Open LinkedIn's feed with the post creator active and pre-filled text
-    // Note: LinkedIn sometimes blocks the pre-fill text based on browser tracking prevention, 
-    // which is why the clipboard copy step above is crucial.
-    const encodedText = encodeURIComponent(text);
-    const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`;
-
-    // Open in new tab
-    window.open(linkedinUrl, "_blank");
+    // Fallback: copy to clipboard
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        setShareLabel("copied");
+        setTimeout(() => setShareLabel("share"), 2500);
+      }
+    } catch (err) {
+      console.error("Share failed:", err);
+    }
   };
 
   useEffect(() => {
@@ -644,21 +684,7 @@ export default function ResultsDashboard() {
 
       {isGood && <Confetti />}
 
-      {isBad && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-2xl select-none opacity-60 drop-shadow-sm"
-              style={{ left: `${Math.random() * 100}%`, top: "-20px" }}
-              animate={{ y: ["0vh", "110vh"], opacity: [1, 0.5, 0] }}
-              transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 6, ease: "linear" }}
-            >
-              {["😢", "💔", "📉", "😭", "🥲"][i % 5]}
-            </motion.div>
-          ))}
-        </div>
-      )}
+      {isBad && <SadRain />}
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-10 space-y-8">
 
@@ -681,13 +707,12 @@ export default function ResultsDashboard() {
             </p>
           </div>
           <div className="flex gap-2 w-full md:w-auto">
-            {/* UPDATED BUTTON FOR LINKEDIN */}
             <Button
-              id="linkedin-share-btn"
-              onClick={shareToLinkedIn}
-              className="w-full md:w-auto bg-[#0a66c2] hover:bg-[#004182] text-white shadow-lg shadow-blue-500/20 transition-all font-bold"
+              onClick={handleShare}
+              className="w-full md:w-auto bg-slate-800 hover:bg-slate-700 text-white shadow-lg shadow-slate-500/20 transition-all font-bold"
             >
-              <Linkedin className="w-4 h-4 mr-2" /> Share
+              <Share2 className="w-4 h-4 mr-2" />
+              {shareLabel === "copied" ? "✓ Copied!" : "Share"}
             </Button>
           </div>
         </motion.div>
