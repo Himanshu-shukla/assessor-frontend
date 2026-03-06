@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Share2, TrendingUp, AlertTriangle, Zap, Target, Award, Download, Eye, X,        // Added this
-  Loader2
+  TrendingUp, AlertTriangle, Zap, Target, Award, Download, X,
+  Loader2, Linkedin
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -589,45 +589,36 @@ export default function ResultsDashboard() {
   const motMessages = isGood ? goodMessages : isMid ? midMessages : badMessages;
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
-  const shareRank = async () => {
-    const text = `I scored ${percentage}% (${score}/${maxScore}) and I'm in the top ${100 - percentile}% of Devs on my stack! 🚀`;
-    const url = window.location.origin;
-    const fullText = `${text} ${url}`;
+  // ─── NEW LINKEDIN SHARE FUNCTION ──────────────────────────────────────────
+  const shareToLinkedIn = async () => {
+    // 1. Create the text you want them to post
+    const text = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀\n\nCheck your own rank here: ${window.location.origin}`;
 
-    // Check if Web Share API is available AND we're on a secure context
-    if (navigator.share && window.isSecureContext) {
-      try {
-        await navigator.share({
-          title: "My SkillRank Result",
-          text: text,
-          url: url,
-        });
-      } catch (err) {
-        // User cancelled share - do nothing
-        console.log("Share cancelled:", err);
+    // 2. Try to copy it to their clipboard so they can easily paste it if the pre-fill fails
+    try {
+      await navigator.clipboard.writeText(text);
+
+      // Briefly change button text to show success
+      const shareButton = document.getElementById('linkedin-share-btn');
+      if (shareButton) {
+        const originalHtml = shareButton.innerHTML;
+        shareButton.innerHTML = '✓ Copied to clipboard!';
+        setTimeout(() => {
+          shareButton.innerHTML = originalHtml;
+        }, 2000);
       }
-    } else {
-      // Fallback: Copy to clipboard with visual feedback
-      try {
-        await navigator.clipboard.writeText(fullText);
-
-        // Show temporary success message
-        const shareButton = document.getElementById('share-button');
-        if (shareButton) {
-          const originalText = shareButton.innerHTML;
-          shareButton.innerHTML = '✓ Copied!';
-          setTimeout(() => {
-            shareButton.innerHTML = originalText;
-          }, 2000);
-        }
-
-        // Also show a toast/alert for better UX
-        alert("✅ Link copied to clipboard! You can now share it anywhere.");
-      } catch (err) {
-        console.error("Failed to copy:", err);
-        alert("❌ Could not copy to clipboard. Please try manually.");
-      }
+    } catch (err) {
+      console.error("Failed to copy:", err);
     }
+
+    // 3. Open LinkedIn's feed with the post creator active and pre-filled text
+    // Note: LinkedIn sometimes blocks the pre-fill text based on browser tracking prevention, 
+    // which is why the clipboard copy step above is crucial.
+    const encodedText = encodeURIComponent(text);
+    const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`;
+
+    // Open in new tab
+    window.open(linkedinUrl, "_blank");
   };
 
   useEffect(() => {
@@ -689,20 +680,14 @@ export default function ResultsDashboard() {
               Assessment Complete · Based on global developer profiles
             </p>
           </div>
-          <div className="flex gap-2">
-            {/* Certificate Button - NEW */}
-            {/* <Button
-              onClick={() => setShowCertificate(true)}
-              className="border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-all"
-            >
-              <Award className="w-4 h-4 mr-2" /> View Certificate
-            </Button> */}
+          <div className="flex gap-2 w-full md:w-auto">
+            {/* UPDATED BUTTON FOR LINKEDIN */}
             <Button
-              id="share-button"
-              onClick={shareRank}
-              className="border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-all"
+              id="linkedin-share-btn"
+              onClick={shareToLinkedIn}
+              className="w-full md:w-auto bg-[#0a66c2] hover:bg-[#004182] text-white shadow-lg shadow-blue-500/20 transition-all font-bold"
             >
-              <Share2 className="w-4 h-4 mr-2" /> Share My Rank
+              <Linkedin className="w-4 h-4 mr-2" /> Share on LinkedIn
             </Button>
           </div>
         </motion.div>

@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight } from "lucide-react";
-
+import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Linkedin } from "lucide-react";
 import {
     RadarChart,
     Radar,
@@ -117,10 +116,6 @@ function ArcGauge({ pct, score, max, color }: { pct: number, score: number, max:
                 />
             </svg>
 
-            {/* FIX APPLIED HERE: 
-              Using top-[85px] and -translate-y-1/2 to pin the exact middle of 
-              the text to the exact middle of the circle (centerY). 
-            */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -138,7 +133,7 @@ function ArcGauge({ pct, score, max, color }: { pct: number, score: number, max:
     );
 }
 
-// ─── Parameter Card Component (Restored Dimensions) ──────────────────────────
+// ─── Parameter Card Component ───────────────────────────────────────────────
 function ParamCard({ param, delay }: { param: ResumeScoreParameter, delay: number }) {
     const st = scoreStyle(param.score);
     return (
@@ -192,6 +187,7 @@ export default function AnalysisPage() {
     const [error, setError] = useState<string | null>(null);
     const [phraseIdx, setPhraseIdx] = useState(0);
     const [showPhrase, setShowPhrase] = useState(true);
+    const [isCopied, setIsCopied] = useState(false);
 
     const fetchAnalysis = async () => {
         try {
@@ -241,6 +237,28 @@ export default function AnalysisPage() {
         fullMark: 10,
     }));
 
+    // ─── LINKEDIN SHARE FUNCTION (OG IMAGE ARCHITECTURE) ──────────────────────
+    const shareToLinkedIn = async () => {
+        const shareUrl = window.location.href;
+        const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀\n\nCheck out my detailed breakdown and test your own skills here:\n${shareUrl}`;
+
+        try {
+            // 1. Silently copy text to clipboard
+            await navigator.clipboard.writeText(text);
+
+            // 2. Show "Copied!" on the button for 2.5 seconds
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2500);
+        } catch (err) {
+            console.error("Failed to copy text:", err);
+        }
+
+        // 3. Open LinkedIn Feed with the create post box triggered
+        const encodedText = encodeURIComponent(text);
+        const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`;
+        window.open(linkedinUrl, "_blank");
+    };
+
     return (
         <>
             <Fonts />
@@ -256,7 +274,7 @@ export default function AnalysisPage() {
                 </div>
 
                 {/* WIDE CONTAINER TO MAXIMIZE SCREEN SPACE */}
-                <div className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
+                <div className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8 max-w-[1400px]">
 
                     {/* ── Header ── */}
                     <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
@@ -310,10 +328,34 @@ export default function AnalysisPage() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
                                 {/* 1. Hero Score Card */}
-                                <div className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative flex flex-col h-full w-full">
+                                <div id="score-card" className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative flex flex-col h-full w-full">
                                     <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(90deg,${scoreHex},${scoreHex}60)` }} />
 
-                                    <div className="p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-center h-full gap-8 lg:gap-10 text-center lg:text-left">
+                                    {/* Desktop LinkedIn Share Button */}
+                                    <button
+                                        onClick={shareToLinkedIn}
+                                        title="Share on LinkedIn"
+                                        className="absolute top-5 right-5 p-2.5 rounded-full bg-[#0A66C2] text-white hover:bg-[#084b8a] transition-all duration-300 shadow-sm group z-10 hidden sm:flex items-center gap-2 cursor-pointer"
+                                    >
+                                        <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                        <span className="text-xs font-bold font-body tracking-wide pr-1">
+                                            {isCopied ? "Copied!" : "Share on  LinkedIn"}
+                                        </span>
+                                    </button>
+
+                                    {/* Mobile LinkedIn Share Button */}
+                                    <button
+                                        onClick={shareToLinkedIn}
+                                        className="absolute top-4 right-4 p-2 rounded-full bg-[#0A66C2] text-white hover:bg-[#084b8a] sm:hidden z-10 shadow-sm cursor-pointer transition-all"
+                                    >
+                                        {isCopied ? (
+                                            <span className="text-[10px] font-bold px-1">Copied!</span>
+                                        ) : (
+                                            <><Linkedin className="w-4 h-4" />Share on LinkedIn</>
+                                        )}
+                                    </button>
+
+                                    <div className="p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-center h-full gap-8 lg:gap-10 text-center lg:text-left mt-4 sm:mt-0">
                                         <ArcGauge pct={pct} score={score} max={maxScore} color={scoreHex} />
 
                                         <div className="flex-1 w-full flex flex-col items-center lg:items-start justify-center">
@@ -373,7 +415,6 @@ export default function AnalysisPage() {
                             </div>
 
                             {/* ── 3. Spacious & Dynamic Grid ── */}
-                            {/* Uses 1 column on mobile, 2 on tablet, 3 on large screens, and 4 on ultra-wide screens */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
                                 {parameters.map((p, i) => (
                                     <ParamCard key={p.id} param={p} delay={0.3 + i * 0.04} />
