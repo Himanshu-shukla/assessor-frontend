@@ -241,7 +241,7 @@ export default function AnalysisPage() {
 
     // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
     const handleShare = async () => {
-        const shareUrl = window.location.href;
+        const shareUrl = window.location.origin;
         const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀`;
 
         // Use native share sheet if available (Android / iOS)
