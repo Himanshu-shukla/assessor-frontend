@@ -1,6 +1,31 @@
-"use client";
-
+import { Metadata } from 'next';
 import { useEffect, useState } from "react";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    return {
+        title: `Resume Analysis for User ${id} | Skill Rank`,
+        description: "View the AI-powered resume analysis, detailed ATS readiness score, and overall profile ranking.",
+        openGraph: {
+            title: "My AI Resume Analysis | Skill Rank",
+            description: "Check out my AI-powered ATS resume analysis and skill ranking!",
+            url: `https://masterynexus.com/analysis/${id}`,
+            images: [
+                {
+                    url: '/opengraph-image.png',
+                    width: 1200,
+                    height: 630,
+                    alt: "Skill Rank | Professional Resume Ranking & Analysis"
+                }
+            ]
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: "My AI Resume Analysis | Skill Rank",
+            description: "Check out my AI-powered ATS resume analysis and skill ranking!",
+        }
+    }
+}
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -241,7 +266,7 @@ export default function AnalysisPage() {
 
     // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
     const handleShare = async () => {
-        const shareUrl = window.location.origin;
+        const shareUrl = window.location.href;
         const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀`;
 
         // Use native share sheet if available (Android / iOS)
