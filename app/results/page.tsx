@@ -886,69 +886,6 @@ export default function ResultsDashboard() {
             </Card>
           </motion.div>
 
-          {/* Opportunities */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-            <Card
-              className="border border-amber-100 h-full backdrop-blur-md"
-              style={{
-                background: "rgba(255, 255, 255, 0.6)",
-                boxShadow: "0 10px 30px rgba(245, 158, 11, 0.05)",
-              }}
-            >
-              <CardHeader className="flex flex-row items-center gap-3 pb-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center border border-amber-200">
-                  <Zap className="text-amber-500 w-5 h-5" />
-                </div>
-                <CardTitle className="text-amber-500 font-black text-lg">Opportunities</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                {swot.opportunities.map((item: string, i: number) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.8 + i * 0.1 }}
-                    className="flex items-start gap-3 bg-white/80 p-3.5 rounded-xl border border-amber-50 shadow-sm"
-                  >
-                    <span className="text-amber-500 mt-0.5 flex-shrink-0 font-bold">→</span>
-                    <span className="text-slate-700 font-medium">{item}</span>
-                  </motion.div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Threats */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-            <Card
-              className="border border-orange-100 h-full backdrop-blur-md"
-              style={{
-                background: "rgba(255, 255, 255, 0.6)",
-                boxShadow: "0 10px 30px rgba(249, 115, 22, 0.05)",
-              }}
-            >
-              <CardHeader className="flex flex-row items-center gap-3 pb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center border border-orange-200">
-                  <Target className="text-orange-500 w-5 h-5" />
-                </div>
-                <CardTitle className="text-orange-500 font-black text-lg">Threats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                {swot.threats.map((item: string, i: number) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.9 + i * 0.1 }}
-                    className="flex items-start gap-3 bg-white/80 p-3.5 rounded-xl border border-orange-50 shadow-sm"
-                  >
-                    <span className="text-orange-500 mt-0.5 flex-shrink-0 font-bold">!</span>
-                    <span className="text-slate-700 font-medium">{item}</span>
-                  </motion.div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
 
         {/* ── Footer ── */}
