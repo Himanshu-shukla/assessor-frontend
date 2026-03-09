@@ -722,6 +722,7 @@ function SadRain() {
 export default function ResultsDashboard() {
   const { results } = useStore();
   const [showCertificate, setShowCertificate] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Theme Cycler State
   const [themeIndex, setThemeIndex] = useState(0);
@@ -760,30 +761,35 @@ export default function ResultsDashboard() {
   // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
   const [shareLabel, setShareLabel] = useState<"share" | "copied">("share");
 
-  const handleShare = async () => {
-    const text = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀`;
-    const url = window.location.origin;
+  const shareText = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀`;
+  const shareUrl = typeof window !== "undefined" ? window.location.origin : "";
 
-    // Use native share sheet if available (Android / iOS)
-    if (navigator.share) {
+  const handleShare = async () => {
+    // Only use native share on mobile devices that support it well
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile && navigator.share) {
       try {
-        await navigator.share({ title: "My SkillRank Result", text, url });
+        await navigator.share({ title: "My SkillRank Result", text: shareText, url: shareUrl });
         return;
       } catch (err) {
-        // User dismissed — do nothing
+        // User dismissed
         return;
       }
     }
 
-    // Fallback: copy to clipboard
+    // Fallback: show custom share modal
+    setShowShareModal(true);
+  };
+
+  const copyToClipboard = async () => {
     try {
       if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(`${text}\n${url}`);
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         setShareLabel("copied");
         setTimeout(() => setShareLabel("share"), 2500);
       }
     } catch (err) {
-      console.error("Share failed:", err);
+      console.error("Copy failed:", err);
     }
   };
 
@@ -1069,6 +1075,63 @@ export default function ResultsDashboard() {
             percentile={percentile}
             companyName={COMPANY_NAME}
           />
+        )}
+
+        {showShareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+            onClick={() => setShowShareModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-slate-800">Share your Result</h3>
+                <button onClick={() => setShowShareModal(false)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200">
+                  <X className="w-4 h-4 text-slate-600" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank')}
+                  className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-12 flex justify-start px-6"
+                >
+                  <span className="text-lg mr-3">💬</span> Share on WhatsApp
+                </Button>
+                <Button 
+                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank')}
+                  className="w-full bg-[#1DA1F2] hover:bg-[#0c85d0] text-white font-bold h-12 flex justify-start px-6"
+                >
+                  <span className="text-lg mr-3">🐦</span> Share on Twitter (X)
+                </Button>
+                <Button 
+                  onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank')}
+                  className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white font-bold h-12 flex justify-start px-6"
+                >
+                  <span className="text-lg mr-3">👔</span> Share on LinkedIn
+                </Button>
+                
+                <div className="h-px bg-slate-100 my-4" />
+                
+                <Button 
+                  onClick={copyToClipboard}
+                  variant="outline"
+                  className="w-full border-slate-200 text-slate-700 font-bold h-12 flex justify-start px-6 hover:bg-slate-50"
+                >
+                  <span className="text-lg mr-3">📋</span> {shareLabel === "copied" ? "Copied to clipboard!" : "Copy Link"}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
