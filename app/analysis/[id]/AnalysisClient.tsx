@@ -29,6 +29,13 @@ interface AIReport {
     parameters: ResumeScoreParameter[];
 }
 
+interface ResumeRank {
+    rank: number;
+    total: number;
+    percentile: number;
+    profileKey: string;
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 const loadingPhrases = [
     "Scanning document structure...",
@@ -133,6 +140,112 @@ function ArcGauge({ pct, score, max, color }: { pct: number, score: number, max:
         </div>
     );
 }
+// ─── Profile Label Map ────────────────────────────────────────────────────────
+const profileLabels: Record<string, string> = {
+    backend: "Backend Developers",
+    frontend: "Frontend Developers",
+    data_analytics: "Data Analytics Professionals",
+    full_stack: "Full Stack Developers",
+    devops: "DevOps Engineers",
+    mobile: "Mobile Developers",
+    data_science: "Data Scientists",
+    general: "Developers",
+};
+
+// ─── Rank Card Component ──────────────────────────────────────────────────────
+function RankCard({ resumeRank, color, messages }: { resumeRank: ResumeRank; color: string; messages: string[] }) {
+    const { rank, total, percentile, profileKey } = resumeRank;
+    const topPct = 100 - percentile;
+    const label = profileLabels[profileKey] ?? "Developers";
+    const ordinal = (n: number) => {
+        const s = ["th", "st", "nd", "rd"];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    };
+
+    const tierLabel =
+        topPct <= 5  ? "🏆 Elite Tier" :
+        topPct <= 15 ? "🔥 Top Performer" :
+        topPct <= 35 ? "📈 Above Average" :
+        topPct <= 65 ? "💪 Solid Candidate" :
+                       "💡 Rising Talent";
+
+    return (
+        <div className="p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-center h-full gap-8 lg:gap-10 text-center lg:text-left mt-4 sm:mt-0">
+            {/* Rank Orb */}
+            <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 180, damping: 14, delay: 0.3 }}
+                className="shrink-0 relative flex flex-col items-center justify-center"
+            >
+                <div
+                    className="w-36 h-36 sm:w-40 sm:h-40 rounded-full flex flex-col items-center justify-center shadow-2xl"
+                    style={{
+                        background: `radial-gradient(circle at 35% 35%, ${color}30, ${color}08)`,
+                        border: `3px solid ${color}50`,
+                        boxShadow: `0 0 36px ${color}30, 0 0 8px ${color}20`,
+                    }}
+                >
+                    <div className="font-disp font-extrabold text-slate-800 leading-none" style={{ fontSize: "clamp(1.9rem,7vw,2.6rem)" }}>
+                        #{rank.toLocaleString()}
+                    </div>
+                    <div className="text-[11px] font-bold mt-1.5" style={{ color }}>
+                        of {total.toLocaleString()}
+                    </div>
+                </div>
+                {/* Pulsing ring */}
+                <div
+                    className="absolute inset-0 rounded-full animate-ping opacity-20"
+                    style={{ border: `2px solid ${color}` }}
+                />
+            </motion.div>
+
+            {/* Text Section */}
+            <div className="flex-1 w-full flex flex-col items-center lg:items-start justify-center">
+                {/* Tier Badge */}
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 mb-4 shadow-sm"
+                    style={{ background: `${color}10`, border: `1px solid ${color}35` }}>
+                    <span className="text-xs font-bold" style={{ color }}>{tierLabel}</span>
+                </div>
+
+                <h2 className="font-disp font-extrabold text-slate-800 leading-tight mb-2" style={{ fontSize: "clamp(1.3rem,4.5vw,1.9rem)" }}>
+                    You&apos;re ranked{" "}
+                    <span style={{ color }}>{ordinal(rank)}</span>{" "}
+                    <span className="text-slate-500 font-bold">out of</span>{" "}
+                    <span style={{ color }}>{total.toLocaleString()}</span>
+                </h2>
+
+                <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-3 font-medium">
+                    Among <strong className="text-slate-700">{label}</strong> on our platform.
+                    You&apos;re in the{" "}
+                    <strong style={{ color }}>Top {topPct}%</strong>.
+                </p>
+
+                {/* Percentile bar */}
+                <div className="w-full max-w-xs">
+                    <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                        <span>Bottom</span><span>Top</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                        <motion.div
+                            className="h-full rounded-full"
+                            style={{ background: `linear-gradient(90deg,${color}80,${color})` }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${percentile}%` }}
+                            transition={{ duration: 1.6, ease: "easeOut", delay: 0.5 }}
+                        />
+                    </div>
+                    <div className="text-center text-[11px] font-bold mt-1" style={{ color }}>Percentile {percentile}</div>
+                </div>
+
+                <div className="mt-4">
+                    <Motivation messages={messages} color={color} />
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // ─── Parameter Card Component ───────────────────────────────────────────────
 function ParamCard({ param, delay }: { param: ResumeScoreParameter, delay: number }) {
@@ -186,6 +299,7 @@ export default function AnalysisPage() {
 
     const [loading, setLoading] = useState(true);
     const [report, setReport] = useState<AIReport | null>(null);
+    const [resumeRank, setResumeRank] = useState<ResumeRank | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [phraseIdx, setPhraseIdx] = useState(0);
     const [showPhrase, setShowPhrase] = useState(true);
@@ -199,6 +313,7 @@ export default function AnalysisPage() {
 
             if (typeof reportData === 'string') throw new Error("Backend returned a string instead of JSON. Please clear your DB.");
             setReport(reportData);
+            if (data.resumeRank) setResumeRank(data.resumeRank);
         } catch (err: any) {
             console.error(err);
             setError(err.message || "Failed to load analysis report.");
@@ -224,8 +339,10 @@ export default function AnalysisPage() {
     const pct = Math.round((score / maxScore) * 100) || 0;
     const parameters = report?.parameters || [];
 
-    const isGood = pct >= 70, isMid = pct >= 40 && pct < 70;
-    const scoreHex = overallColor(pct);
+    // Ranking display helpers
+    const rankPercentile = resumeRank?.percentile ?? pct;
+    const isGood = rankPercentile >= 65, isMid = rankPercentile >= 35 && rankPercentile < 65;
+    const scoreHex = overallColor(rankPercentile);
     const motMsgs = isGood ? goodMessages : isMid ? midMessages : badMessages;
 
     // Light Theme Ambient Blob Colors
@@ -242,7 +359,10 @@ export default function AnalysisPage() {
     // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
     const handleShare = async () => {
         const shareUrl = window.location.href;
-        const text = `I just scored ${pct}% (${score}/${maxScore}) on my AI Resume Analysis and ATS evaluation! 🚀`;
+        const rankText = resumeRank
+            ? `I ranked #${resumeRank.rank.toLocaleString()} out of ${resumeRank.total.toLocaleString()} ${profileLabels[resumeRank.profileKey] ?? "Developers"} on SkillRank AI! 🚀`
+            : `I scored ${pct}% on my AI Resume Analysis! 🚀`;
+        const text = rankText;
 
         // Use native share sheet if available (Android / iOS)
         if (navigator.share) {
@@ -338,7 +458,7 @@ export default function AnalysisPage() {
                             {/* ── TOP SECTION: ATS Readiness & Radar (Side-by-Side) ── */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
-                                {/* 1. Hero Score Card */}
+                                {/* 1. Hero Ranking Card */}
                                 <div id="score-card" className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative flex flex-col h-full w-full">
                                     <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(90deg,${scoreHex},${scoreHex}60)` }} />
 
@@ -366,27 +486,18 @@ export default function AnalysisPage() {
                                         )}
                                     </button>
 
-                                    <div className="p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-center h-full gap-8 lg:gap-10 text-center lg:text-left mt-4 sm:mt-0">
-                                        <ArcGauge pct={pct} score={score} max={maxScore} color={scoreHex} />
-
-                                        <div className="flex-1 w-full flex flex-col items-center lg:items-start justify-center">
-                                            <div className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 mb-4 shadow-sm" style={{ background: `${scoreHex}10`, border: `1px solid ${scoreHex}35` }}>
-                                                <span className="text-xs font-bold" style={{ color: scoreHex }}>
-                                                    {isGood ? "🏆 Excellent Profile" : isMid ? "📈 Needs Optimization" : "💪 Needs Rewrite"}
-                                                </span>
+                                    {resumeRank ? (
+                                        <RankCard resumeRank={resumeRank} color={scoreHex} messages={motMsgs} />
+                                    ) : (
+                                        /* Fallback: plain score while rank loads */
+                                        <div className="p-6 sm:p-10 flex flex-col items-center justify-center h-full gap-4 text-center mt-4 sm:mt-0">
+                                            <div className="font-disp font-extrabold text-slate-800" style={{ fontSize: "clamp(2.5rem,10vw,4rem)" }}>
+                                                {pct}%
                                             </div>
-
-                                            <h2 className="font-disp font-extrabold text-slate-800 leading-tight mb-2" style={{ fontSize: "clamp(1.5rem,5vw,2.2rem)" }}>
-                                                ATS Readiness: <span style={{ color: scoreHex }}>{pct}%</span>
-                                            </h2>
-
-                                            <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-6 font-medium">
-                                                Scored <strong className="text-slate-700">{score}/{maxScore}</strong> across our senior technical recruiter evaluation framework.
-                                            </p>
-
+                                            <div className="text-slate-500 text-sm font-medium">Resume Score ({score}/{maxScore})</div>
                                             <Motivation messages={motMsgs} color={scoreHex} />
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
 
                                 {/* 2. Recharts Radar Chart */}
@@ -437,8 +548,8 @@ export default function AnalysisPage() {
                                 className="mt-8 rounded-3xl p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
                             >
                                 <div>
-                                    <h4 className="font-disp text-slate-800 font-extrabold text-lg sm:text-xl mb-1.5">Ready to prove your skills?</h4>
-                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">Take the dynamically generated technical test based on your profile.</p>
+                                    <h4 className="font-disp text-slate-800 font-extrabold text-lg sm:text-xl mb-1.5">Want a better rank? 🎯</h4>
+                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">Take the skill test to prove your abilities and improve your standing among {profileLabels[resumeRank?.profileKey ?? "general"] ?? "Developers"}.</p>
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">

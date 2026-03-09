@@ -1,5 +1,27 @@
 import { create } from 'zustand';
 
+// ─── Session ID helpers ───────────────────────────────────────────────────────
+const SESSION_KEY = 'sr_session_id';
+
+function generateSessionId(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no confusable chars (0/O, 1/I)
+  return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+export function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return '';
+  const existing = localStorage.getItem(SESSION_KEY);
+  if (existing) return existing;
+  const id = generateSessionId();
+  localStorage.setItem(SESSION_KEY, id);
+  return id;
+}
+
+export function setSessionId(id: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(SESSION_KEY, id.toUpperCase().trim());
+}
+
 interface AppState {
   user: any | null;
   setUser: (user: any) => void;
@@ -8,6 +30,10 @@ interface AppState {
   setUploadStatus: (status: 'idle' | 'uploading' | 'parsing' | 'ready') => void;
   uploadId: string | null;
   setUploadId: (id: string) => void;
+
+  sessionId: string;
+  initSession: () => void;
+  updateSessionId: (id: string) => void;
 
   test: {
     questions: any[];
@@ -33,19 +59,21 @@ export const useStore = create<AppState>((set) => ({
   uploadId: null,
   setUploadId: (id) => set({ uploadId: id }),
 
+  sessionId: '',
+  initSession: () => set({ sessionId: getOrCreateSessionId() }),
+  updateSessionId: (id: string) => {
+    setSessionId(id);
+    set({ sessionId: id.toUpperCase().trim() });
+  },
+
   test: {
     questions: [],
     currentQuestionIndex: 0,
     answers: {},
-    timeRemaining: 1800, // 30 mins
+    timeRemaining: 1800,
     setQuestions: (questions) =>
       set((state) => ({
-        test: {
-          ...state.test,
-          questions,
-          currentQuestionIndex: 0,
-          answers: {},
-        },
+        test: { ...state.test, questions, currentQuestionIndex: 0, answers: {} },
       })),
     setAnswer: (index, answer) => set((state) => ({
       test: { ...state.test, answers: { ...state.test.answers, [index]: answer } }
@@ -54,13 +82,7 @@ export const useStore = create<AppState>((set) => ({
       test: { ...state.test, currentQuestionIndex: state.test.currentQuestionIndex + 1 }
     })),
     resetTest: () => set((state) => ({
-      test: {
-        ...state.test,
-        questions: [],
-        currentQuestionIndex: 0,
-        answers: {},
-        timeRemaining: 1800
-      }
+      test: { ...state.test, questions: [], currentQuestionIndex: 0, answers: {}, timeRemaining: 1800 }
     })),
   },
 

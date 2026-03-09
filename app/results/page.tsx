@@ -558,6 +558,131 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
   );
 }
 
+// ─── Profile Labels ──────────────────────────────────────────────────────────
+const profileLabels: Record<string, string> = {
+  backend: "Backend Developers",
+  frontend: "Frontend Developers",
+  data_analytics: "Data Analytics Professionals",
+  full_stack: "Full Stack Developers",
+  devops: "DevOps Engineers",
+  mobile: "Mobile Developers",
+  data_science: "Data Scientists",
+  general: "Developers",
+};
+
+// ─── Rank Improvement Card ────────────────────────────────────────────────────
+function RankImprovementCard({ resumeRank, semanticColor }: {
+  resumeRank: { rank: number; total: number; percentile: number; profileKey: string };
+  semanticColor: string;
+}) {
+  const { rank, total, percentile, profileKey } = resumeRank;
+  const topPct = 100 - percentile;
+  const label = profileLabels[profileKey] ?? "Developers";
+
+  const ordinal = (n: number) => {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  const tierLabel =
+    topPct <= 5  ? "🏆 Elite Tier" :
+    topPct <= 15 ? "🔥 Top Performer" :
+    topPct <= 35 ? "📈 Above Average" :
+    topPct <= 65 ? "💪 Solid Candidate" :
+                   "💡 Rising Talent";
+
+  const color = semanticColor;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+    >
+      <Card
+        className="border overflow-hidden backdrop-blur-xl"
+        style={{
+          background: "rgba(255, 255, 255, 0.75)",
+          boxShadow: `0 20px 40px ${color}15, 0 0 0 1px ${color}20 inset`,
+          borderColor: `${color}30`,
+        }}
+      >
+        {/* Top accent bar */}
+        <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}60)` }} />
+
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+
+            {/* Rank Orb */}
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 180, damping: 14, delay: 0.5 }}
+              className="relative shrink-0 flex flex-col items-center justify-center"
+            >
+              <div
+                className="w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-2xl"
+                style={{
+                  background: `radial-gradient(circle at 35% 35%, ${color}30, ${color}08)`,
+                  border: `3px solid ${color}50`,
+                  boxShadow: `0 0 36px ${color}30`,
+                }}
+              >
+                <div className="font-black text-slate-800 leading-none" style={{ fontSize: "clamp(1.6rem,6vw,2.2rem)" }}>
+                  #{rank.toLocaleString()}
+                </div>
+                <div className="text-[11px] font-bold mt-1" style={{ color }}>
+                  of {total.toLocaleString()}
+                </div>
+              </div>
+              <div className="absolute inset-0 rounded-full animate-ping opacity-15" style={{ border: `2px solid ${color}` }} />
+            </motion.div>
+
+            {/* Text */}
+            <div className="flex-1 text-center sm:text-left">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-3 text-xs font-bold shadow-sm"
+                style={{ background: `${color}12`, border: `1px solid ${color}35`, color }}
+              >
+                ⚡ Updated Rank · Resume + Test Combined
+              </div>
+
+              <h3 className="font-black text-slate-800 leading-tight mb-1" style={{ fontSize: "clamp(1.1rem,3.5vw,1.6rem)" }}>
+                You&apos;re now <span style={{ color }}>{ordinal(rank)}</span>{" "}
+                <span className="text-slate-500 font-bold">out of</span>{" "}
+                <span style={{ color }}>{total.toLocaleString()}</span>
+              </h3>
+
+              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-3 font-medium">
+                Among <strong className="text-slate-700">{label}</strong>.
+                {" "}You&apos;re in the <strong style={{ color }}>Top {topPct}%</strong> — {tierLabel}
+              </p>
+
+              {/* Percentile bar */}
+              <div className="w-full max-w-xs mx-auto sm:mx-0">
+                <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                  <span>Bottom</span><span>Top</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: `linear-gradient(90deg, ${color}80, ${color})` }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${percentile}%` }}
+                    transition={{ duration: 1.6, ease: "easeOut", delay: 0.7 }}
+                  />
+                </div>
+                <div className="text-center text-[10px] font-bold mt-1" style={{ color }}>Percentile {percentile}</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "SkillRank AI";
 
 // ─── Sad emoji rain (bad score) ───────────────────────────────────────────────
@@ -613,6 +738,7 @@ export default function ResultsDashboard() {
   const maxScore = results?.maxScore || 0;
   const percentage = results?.percentage || 0;
   const percentile = results?.percentile || 0;
+  const resumeRank = results?.resumeRank ?? null;
 
   const swot = {
     strengths: results?.swotAnalysis?.strengths ?? [],
@@ -795,6 +921,11 @@ export default function ResultsDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* ── Updated Resume Rank Card ── */}
+        {resumeRank && (
+          <RankImprovementCard resumeRank={resumeRank} semanticColor={semanticColor} />
+        )}
 
         {/* ── Bad score CTA ── */}
         {isBad && (

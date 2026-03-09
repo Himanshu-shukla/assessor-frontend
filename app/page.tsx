@@ -11,6 +11,9 @@ import {
   CheckCircle,
   RefreshCw,
   Sparkles,
+  Copy,
+  KeyRound,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,7 +40,7 @@ const themes = [
     iconBg: "bg-gradient-to-br from-sky-400 to-blue-500 shadow-sky-400/40",
     buttonBg: "bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-sky-200",
     snowText: "text-sky-200",
-    tearColor: "#7dd3fc", // sky-300
+    tearColor: "#7dd3fc",
     loaderBg: "bg-sky-200",
     loaderIcon: "from-sky-400 to-blue-500 shadow-sky-200",
     progressInner: "[&>div]:bg-sky-500",
@@ -432,8 +435,17 @@ function DeathScreen({ onReload }: { onReload: () => void }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Home() {
   const router = useRouter();
-  const { uploadStatus, setUploadStatus, setUploadId, setUser, uploadId } = useStore();
+  const { uploadStatus, setUploadStatus, setUploadId, setUser, uploadId, sessionId, initSession, updateSessionId } = useStore();
   const [progress, setProgress] = useState(0);
+  const [sessionInput, setSessionInput] = useState("");
+  const [sessionLookupLoading, setSessionLookupLoading] = useState(false);
+  const [sessionLookupError, setSessionLookupError] = useState<string | null>(null);
+  const [sessionHistory, setSessionHistory] = useState<any[]>([]);
+  const [showSessionPanel, setShowSessionPanel] = useState(false);
+  const [copiedSession, setCopiedSession] = useState(false);
+
+  // Init session on mount
+  useEffect(() => { initSession(); }, [initSession]);
 
   // NEW: Error state
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -530,10 +542,16 @@ export default function Home() {
           const { data } = await axios.get(`${API_URL}/status/${id}`);
           if (data.status === "parsing") setProgress(60);
           if (data.ready) {
+            setProgress(90);
+            clearInterval(interval);
+            // Auto-trigger AI analysis and redirect
+            try {
+              await axios.post(`${API_URL}/analysis/${id}`);
+            } catch (_) { /* ok if analysis endpoint errors — it will retry on the analysis page */ }
             setProgress(100);
             setUploadStatus("ready");
             setPenguinState("happy");
-            clearInterval(interval);
+            router.push(`/analysis/${id}`);
           }
         } catch (err) {
           console.error(err);
@@ -541,7 +559,7 @@ export default function Home() {
         }
       }, 2000);
     },
-    [setUploadStatus]
+    [setUploadStatus, router]
   );
 
   const onDrop = useCallback(
@@ -578,7 +596,9 @@ export default function Home() {
       try {
         const formData = new FormData();
         formData.append("resume", acceptedFiles[0]);
-        const { data } = await axios.post(`${API_URL}/upload`, formData);
+        const { data } = await axios.post(`${API_URL}/upload`, formData, {
+          headers: { "x-session-id": sessionId || "" },
+        });
 
         setUploadId(data.assessmentId);
         setProgress(90);
@@ -958,7 +978,7 @@ export default function Home() {
                       <h3 className="text-slate-800 text-2xl font-black mb-3">
                         {uploadStatus === "uploading"
                           ? "🐧 Penguin is reading your resume..."
-                          : "🔍 Analyzing your skills..."}
+                          : "🤖 AI is ranking your resume..."}
                       </h3>
                       <div className="max-w-xs mx-auto mt-6">
                         <Progress value={progress} className={`h-3 bg-slate-200 transition-colors duration-1000 ${activeTheme.progressInner}`} />
@@ -968,64 +988,15 @@ export default function Home() {
                   )}
 
                   {uploadStatus === "ready" && (
-                    <motion.div className="text-center py-4">
-                      <h3 className="text-3xl font-black mb-6">
-                        🎯 Choose Your Evaluation Type
-                      </h3>
-
-                      <div className="grid gap-6 md:grid-cols-2">
-
-                        {/* FREE TEST */}
-                        <Link href={`/test/${uploadId}`} className="block h-full">
-                          <Card className="h-full p-8 cursor-pointer hover:shadow-2xl transition-all hover:-translate-y-1 bg-gradient-to-br from-white to-green-50/50 border-2 border-green-200/60 shadow-lg shadow-green-100/30">
-                            <div className="flex items-center gap-4 mb-3">
-                              <div className="p-3 bg-green-100 rounded-xl">
-                                <span className="text-2xl">🧪</span>
-                              </div>
-                              <h4 className="text-2xl font-black text-slate-800">
-                                Free Skill Test
-                              </h4>
-                            </div>
-                            <p className="text-slate-600 font-medium text-lg leading-relaxed mb-4 text-left">
-                              Dynamic MCQ-based skill assessment generated instantly from your resume.
-                            </p>
-                            <div className="text-left">
-                              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border border-green-200 px-3 py-1 text-sm shadow-sm pointer-events-none">
-                                Free Forever
-                              </Badge>
-                            </div>
-                          </Card>
-                        </Link>
-
-                        {/* AI ANALYSIS */}
-                        <Card className="h-full p-8 cursor-pointer hover:shadow-2xl transition-all hover:-translate-y-1 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-indigo-200 shadow-lg shadow-indigo-100/30 relative overflow-hidden group"
-                          onClick={handleAIAnalysis}
-                        >
-                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
-                            <Sparkles className="w-32 h-32" />
-                          </div>
-                          <div className="flex items-center gap-4 mb-3 relative z-10">
-                            <div className="p-3 bg-indigo-100 rounded-xl shadow-inner border border-indigo-50">
-                              <span className="text-2xl">🤖</span>
-                            </div>
-                            <h4 className="text-2xl font-black text-slate-800">
-                              AI Resume Analysis
-                            </h4>
-                          </div>
-                          <p className="text-slate-600 font-medium text-lg leading-relaxed mb-4 relative z-10 text-left">
-                            Deep resume scoring, career insights, ATS readiness, & improvement roadmap.
-                          </p>
-                          <div className="flex gap-2 relative z-10 text-left">
-                            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 border-none px-3 py-1 text-sm shadow-md pointer-events-none">
-                              Premium AI
-                            </Badge>
-                            <Badge className="bg-white text-indigo-700 border border-indigo-200 px-3 py-1 text-sm shadow-sm pointer-events-none">
-                              Recommended
-                            </Badge>
-                          </div>
-                        </Card>
-
+                    <motion.div className="text-center py-10" key="ready" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <div className="relative w-20 h-20 mx-auto mb-4">
+                        <div className={`absolute inset-0 rounded-2xl animate-ping opacity-50 ${activeTheme.successBg}`} />
+                        <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl bg-gradient-to-br ${activeTheme.successIcon}`}>
+                          <CheckCircle className="w-10 h-10 text-white" />
+                        </div>
                       </div>
+                      <h3 className="text-slate-800 text-2xl font-black mb-2">🚀 Generating your rank...</h3>
+                      <p className="text-slate-500 font-medium">Redirecting to your AI analysis!</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
