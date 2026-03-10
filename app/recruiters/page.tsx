@@ -16,6 +16,7 @@ export default function RecruitersPage() {
   const router = useRouter();
   const { sessionId, initSession } = useStore();
   const [files, setFiles] = useState<File[]>([]);
+  const [jobDescription, setJobDescription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<"idle" | "uploading" | "analyzing" | "done">("idle");
@@ -56,7 +57,10 @@ export default function RecruitersPage() {
       // 2. Submit to Batch Analysis API
       setStatus("analyzing");
       setProgress(50);
-      const batchRes = await axios.post(`${API_URL}/analysis/batch`, { assessmentIds });
+      const batchRes = await axios.post(`${API_URL}/analysis/batch`, { 
+        assessmentIds,
+        jobDescription: jobDescription.trim() || undefined
+      });
       const currentJobIds = batchRes.data.jobIds;
       setJobIds(currentJobIds);
 
@@ -154,6 +158,18 @@ export default function RecruitersPage() {
                   <UploadCloud className="w-16 h-16 text-blue-500 mx-auto mb-4 opacity-80" />
                   <p className="text-lg font-bold text-slate-700">Drag & Drop Multiple Resumes (PDF)</p>
                   <p className="text-slate-500 text-sm mt-2">Maximum 5MB per file</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Target Job Description (Optional)
+                  </label>
+                  <textarea
+                    className="w-full h-32 px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all text-sm outline-none resize-none"
+                    placeholder="Paste the job description here... Our AI will rank the candidates strictly against these requirements!"
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                  />
                 </div>
 
                 {files.length > 0 && (
