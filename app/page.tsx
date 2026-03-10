@@ -54,6 +54,7 @@ const themes = [
     brandTextHover: "hover:decoration-rose-500 decoration-rose-300",
     badge1: "text-rose-600 border-rose-200",
     badge2: "text-pink-600 border-pink-200",
+
     dropzoneActive: "border-rose-400 bg-rose-50 shadow-rose-100",
     dropzoneHover: "hover:border-rose-400 hover:bg-rose-50/50 hover:shadow-rose-100",
     iconBg: "bg-gradient-to-br from-rose-400 to-pink-500 shadow-rose-400/40",
@@ -722,6 +723,11 @@ export default function Home() {
             </div>
           </div>
           <nav className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
+            <Link href="/recruiters">
+              <Button variant="outline" className={`bg-white/80 shadow-sm text-[10px] sm:text-xs py-1 px-2 sm:px-3 h-auto transition-colors duration-500 border hover:bg-white ${activeTheme.badge2}`}>
+                Recruiters: Bulk Upload
+              </Button>
+            </Link>
             <Badge className={`bg-white shadow-sm text-[10px] sm:text-xs py-1 px-2 sm:px-3 transition-colors duration-500 border ${activeTheme.badge1}`}>🔒 Secure</Badge>
             <Badge className={`bg-white shadow-sm text-[10px] sm:text-xs py-1 px-2 sm:px-3 transition-colors duration-500 border ${activeTheme.badge2}`}>⚡ Fast</Badge>
           </nav>

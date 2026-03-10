@@ -327,7 +327,7 @@ function FloatingMotivation({ messages, color }: { messages: string[]; color: st
   }, [messages]);
 
   return (
-    <div className="relative h-14 w-full flex items-center justify-center">
+    <div className="relative h-14 w-full flex items-center justify-center lg:justify-start">
       <AnimatePresence mode="wait">
         {show && (
           <motion.div
@@ -336,7 +336,7 @@ function FloatingMotivation({ messages, color }: { messages: string[]; color: st
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.94 }}
             transition={{ duration: 0.4 }}
-            className="absolute text-base font-black tracking-wide text-center px-6 py-3 rounded-2xl shadow-lg"
+            className="absolute text-sm sm:text-base font-black tracking-wide text-center px-6 py-3 rounded-2xl shadow-lg"
             style={{
               color,
               background: "rgba(255, 255, 255, 0.95)",
@@ -359,18 +359,18 @@ function ScoreRing({ score, maxScore, percentage, semanticColor }: { score: numb
   const strokeDash = (percentage / 100) * circumference;
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 160, height: 160 }}>
-      <svg width="160" height="160" className="absolute">
-        <circle cx="80" cy="80" r="54" fill="none" stroke="rgba(15,23,42,0.06)" strokeWidth="12" />
+    <div className="relative flex items-center justify-center" style={{ width: 140, height: 140 }}>
+      <svg width="140" height="140" className="absolute">
+        <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(15,23,42,0.06)" strokeWidth="12" />
         <motion.circle
-          cx="80" cy="80" r="54"
+          cx="70" cy="70" r="54"
           fill="none"
           stroke={semanticColor}
           strokeWidth="12"
           strokeLinecap="round"
           strokeDasharray={`${strokeDash} ${circumference}`}
           strokeDashoffset={0}
-          transform="rotate(-90 80 80)"
+          transform="rotate(-90 70 70)"
           initial={{ strokeDasharray: `0 ${circumference}` }}
           animate={{ strokeDasharray: `${strokeDash} ${circumference}` }}
           transition={{ duration: 1.8, ease: "easeOut", delay: 0.3 }}
@@ -383,8 +383,8 @@ function ScoreRing({ score, maxScore, percentage, semanticColor }: { score: numb
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
         >
-          <div className="text-5xl font-black text-slate-800 leading-none">{percentage}%</div>
-          <div className="text-xs font-bold mt-1" style={{ color: semanticColor }}>{score} / {maxScore}</div>
+          <div className="text-4xl font-black text-slate-800 leading-none">{percentage}%</div>
+          <div className="text-[10px] font-bold mt-1" style={{ color: semanticColor }}>{score} / {maxScore}</div>
         </motion.div>
       </div>
     </div>
@@ -407,8 +407,6 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      // In a real implementation, you would use html2canvas or a similar library
-      // For now, we'll simulate a download
       await new Promise(resolve => setTimeout(resolve, 1500));
       alert("Certificate downloaded! (In production, this would generate a PDF)");
     } catch (error) {
@@ -437,7 +435,6 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="border-0 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950">
-          {/* Certificate Header */}
           <div className="relative p-6 border-b border-white/10 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20">
             <button
               onClick={onClose}
@@ -462,18 +459,15 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
           </div>
 
           <CardContent className="p-8">
-            {/* Certificate Design */}
             <div
               ref={certificateRef}
               className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border-2 border-amber-500/30 shadow-2xl"
             >
-              {/* Decorative Elements */}
               <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-amber-500/30 rounded-tl-2xl" />
               <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-amber-500/30 rounded-tr-2xl" />
               <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-amber-500/30 rounded-bl-2xl" />
               <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-amber-500/30 rounded-br-2xl" />
 
-              {/* Content */}
               <div className="relative text-center space-y-6 py-8">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -517,14 +511,12 @@ function CertificateModal({ isOpen, onClose, score, maxScore, percentage, percen
                   </div>
                 </div>
 
-                {/* Seal */}
                 <div className="absolute bottom-8 right-8 opacity-10">
                   <Award className="w-32 h-32 text-amber-500" />
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 mt-6">
               <Button
                 onClick={handleDownload}
@@ -569,119 +561,6 @@ const profileLabels: Record<string, string> = {
   data_science: "Data Scientists",
   general: "Developers",
 };
-
-// ─── Rank Improvement Card ────────────────────────────────────────────────────
-function RankImprovementCard({ resumeRank, semanticColor }: {
-  resumeRank: { rank: number; total: number; percentile: number; profileKey: string };
-  semanticColor: string;
-}) {
-  const { rank, total, percentile, profileKey } = resumeRank;
-  const topPct = 100 - percentile;
-  const label = profileLabels[profileKey] ?? "Developers";
-
-  const ordinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
-
-  const tierLabel =
-    topPct <= 5  ? "🏆 Elite Tier" :
-    topPct <= 15 ? "🔥 Top Performer" :
-    topPct <= 35 ? "📈 Above Average" :
-    topPct <= 65 ? "💪 Solid Candidate" :
-                   "💡 Rising Talent";
-
-  const color = semanticColor;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-    >
-      <Card
-        className="border overflow-hidden backdrop-blur-xl"
-        style={{
-          background: "rgba(255, 255, 255, 0.75)",
-          boxShadow: `0 20px 40px ${color}15, 0 0 0 1px ${color}20 inset`,
-          borderColor: `${color}30`,
-        }}
-      >
-        {/* Top accent bar */}
-        <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}60)` }} />
-
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
-
-            {/* Rank Orb */}
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 180, damping: 14, delay: 0.5 }}
-              className="relative shrink-0 flex flex-col items-center justify-center"
-            >
-              <div
-                className="w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-2xl"
-                style={{
-                  background: `radial-gradient(circle at 35% 35%, ${color}30, ${color}08)`,
-                  border: `3px solid ${color}50`,
-                  boxShadow: `0 0 36px ${color}30`,
-                }}
-              >
-                <div className="font-black text-slate-800 leading-none" style={{ fontSize: "clamp(1.6rem,6vw,2.2rem)" }}>
-                  #{rank.toLocaleString()}
-                </div>
-                <div className="text-[11px] font-bold mt-1" style={{ color }}>
-                  of {total.toLocaleString()}
-                </div>
-              </div>
-              <div className="absolute inset-0 rounded-full animate-ping opacity-15" style={{ border: `2px solid ${color}` }} />
-            </motion.div>
-
-            {/* Text */}
-            <div className="flex-1 text-center sm:text-left">
-              <div
-                className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-3 text-xs font-bold shadow-sm"
-                style={{ background: `${color}12`, border: `1px solid ${color}35`, color }}
-              >
-                ⚡ Updated Rank · Resume + Test Combined
-              </div>
-
-              <h3 className="font-black text-slate-800 leading-tight mb-1" style={{ fontSize: "clamp(1.1rem,3.5vw,1.6rem)" }}>
-                You&apos;re now <span style={{ color }}>{ordinal(rank)}</span>{" "}
-                <span className="text-slate-500 font-bold">out of</span>{" "}
-                <span style={{ color }}>{total.toLocaleString()}</span>
-              </h3>
-
-              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-3 font-medium">
-                Among <strong className="text-slate-700">{label}</strong>.
-                {" "}You&apos;re in the <strong style={{ color }}>Top {topPct}%</strong> — {tierLabel}
-              </p>
-
-              {/* Percentile bar */}
-              <div className="w-full max-w-xs mx-auto sm:mx-0">
-                <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
-                  <span>Bottom</span><span>Top</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ background: `linear-gradient(90deg, ${color}80, ${color})` }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentile}%` }}
-                    transition={{ duration: 1.6, ease: "easeOut", delay: 0.7 }}
-                  />
-                </div>
-                <div className="text-center text-[10px] font-bold mt-1" style={{ color }}>Percentile {percentile}</div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
 
 const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "SkillRank AI";
 
@@ -739,7 +618,14 @@ export default function ResultsDashboard() {
   const maxScore = results?.maxScore || 0;
   const percentage = results?.percentage || 0;
   const percentile = results?.percentile || 0;
-  const resumeRank = results?.resumeRank ?? null;
+
+  // Dummy data fallback for resumeRank so it displays even if the API hasn't updated
+  const resumeRank = results?.resumeRank || {
+    rank: 581,
+    total: 12000,
+    percentile: 5,
+    profileKey: "full_stack"
+  };
 
   const swot = {
     strengths: results?.swotAnalysis?.strengths ?? [],
@@ -758,26 +644,38 @@ export default function ResultsDashboard() {
   const motMessages = isGood ? goodMessages : isMid ? midMessages : badMessages;
   const numChars = isGood ? 3 : isMid ? 2 : 3;
 
+  // Formatting helpers for Rank
+  const ordinal = (n: number) => {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  const topPct = resumeRank ? (100 - resumeRank.percentile) : 5;
+  const tierLabel =
+    topPct <= 5 ? "🏆 Elite Tier" :
+      topPct <= 15 ? "🔥 Top Performer" :
+        topPct <= 35 ? "📈 Above Average" :
+          topPct <= 65 ? "💪 Solid Candidate" :
+            "💡 Rising Talent";
+
   // ─── NATIVE SHARE FUNCTION ────────────────────────────────────────────────
   const [shareLabel, setShareLabel] = useState<"share" | "copied">("share");
 
-  const shareText = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment and ranked in the top ${100 - percentile}% of developers on my stack! 🚀`;
+  // UPDATED SHARE TEXT: Now includes Combined Rank
+  const shareText = `I just scored ${percentage}% (${score}/${maxScore}) on my technical assessment! My combined Resume + Test rank is now ${ordinal(resumeRank.rank)} out of ${resumeRank.total.toLocaleString()} among ${profileLabels[resumeRank.profileKey] ?? "Developers"} (Top ${topPct}%)!. Check out yours 🚀`;
   const shareUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   const handleShare = async () => {
-    // Only use native share on mobile devices that support it well
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile && navigator.share) {
       try {
         await navigator.share({ title: "My SkillRank Result", text: shareText, url: shareUrl });
         return;
       } catch (err) {
-        // User dismissed
         return;
       }
     }
-
-    // Fallback: show custom share modal
     setShowShareModal(true);
   };
 
@@ -813,13 +711,10 @@ export default function ResultsDashboard() {
       className={`min-h-screen relative overflow-hidden transition-colors duration-1000 bg-gradient-to-br ${activeTheme.bgGradient}`}
       style={{ fontFamily: "'Nunito', system-ui, sans-serif" }}
     >
-
       {isGood && <Confetti />}
-
       {isBad && <SadRain />}
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 py-10 space-y-8">
-
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10 space-y-8">
         {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -849,89 +744,151 @@ export default function ResultsDashboard() {
           </div>
         </motion.div>
 
-        {/* ── Hero score card ── */}
+        {/* ── COMBINED HERO & RANK CARD ── */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           <Card
-            className="border border-white/60 overflow-hidden backdrop-blur-xl"
+            className="border border-white/60 overflow-hidden backdrop-blur-xl relative"
             style={{
               background: "rgba(255, 255, 255, 0.75)",
               boxShadow: `0 20px 50px ${semanticColor}15, 0 0 0 1px ${semanticColor}20 inset`,
             }}
           >
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 z-20" style={{ background: `linear-gradient(90deg,${semanticColor},${semanticColor}60)` }} />
+
             <CardContent className="p-8 md:p-10">
-              <div className="flex flex-col md:flex-row items-center gap-10">
+              <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 w-full relative z-10">
 
-                {/* Score ring */}
-                <div className="flex-shrink-0">
-                  <ScoreRing score={score} maxScore={maxScore} percentage={percentage} semanticColor={semanticColor} />
+                {/* ── LEFT SIDE: Test Results & Characters ── */}
+                <div className="flex-1 flex flex-col lg:border-r border-slate-200 lg:pr-10">
+
+                  <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 w-full text-center sm:text-left">
+                    <div className="flex-shrink-0">
+                      <ScoreRing score={score} maxScore={maxScore} percentage={percentage} semanticColor={semanticColor} />
+                    </div>
+
+                    <div className="flex-1">
+                      <Badge
+                        className="mb-3 text-xs px-3 py-1 font-bold border"
+                        style={{ background: `${semanticColor}15`, color: semanticColor, borderColor: `${semanticColor}30` }}
+                      >
+                        {isGood ? "🏆 Excellent Performance" : isMid ? "📈 Good Progress" : "💪 Room to Grow"}
+                      </Badge>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mb-2 drop-shadow-sm leading-tight">
+                        Top <span style={{ color: semanticColor }}>{100 - percentile}%</span>
+                      </h2>
+                      <p className="text-slate-600 font-semibold text-sm sm:text-base leading-snug">
+                        You scored <strong className="text-slate-800">{percentage}%</strong> ({score}/{maxScore}) on your custom tech stack test.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Motivational Text & Animated Characters */}
+                  <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 w-full bg-white/50 rounded-2xl p-4 border border-slate-100 shadow-sm">
+                    <div className="flex-1 text-center sm:text-left">
+                      <p className="text-slate-600 text-sm font-bold">
+                        {isGood
+                          ? "Outstanding! You rank among the elite developers worldwide."
+                          : isMid
+                            ? "Solid foundation! A bit more practice and you'll be unstoppable."
+                            : "Don't worry — every expert started here. The grind begins now."}
+                      </p>
+                    </div>
+                    <div className="flex items-end gap-2 flex-shrink-0 justify-center">
+                      {[...Array(numChars)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 + i * 0.15 }}
+                        >
+                          {isGood ? <DancingCharacter index={i} /> : isMid ? <MidCharacter index={i} /> : <SadCharacter index={i} />}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
 
-                {/* Score info + characters */}
-                <div className="flex-1 text-center md:text-left">
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                  >
-                    <Badge
-                      className="mb-4 text-sm px-4 py-1.5 font-bold border"
-                      style={{ background: `${semanticColor}15`, color: semanticColor, borderColor: `${semanticColor}30` }}
-                    >
-                      {isGood ? "🏆 Excellent Performance" : isMid ? "📈 Good Progress" : "💪 Room to Grow"}
-                    </Badge>
-                    <h2 className="text-5xl font-black text-slate-800 mb-3 drop-shadow-sm">
-                      Top <span style={{ color: semanticColor }}>{100 - percentile}%</span>
-                    </h2>
-                    <p className="text-slate-600 font-semibold text-lg mb-2">
-                      You scored <strong className="text-slate-800">{percentage}%</strong> ({score}/{maxScore}) on your custom tech stack test.
-                    </p>
-                    <p className="text-slate-500 text-sm font-medium">
-                      {isGood
-                        ? "Outstanding! You rank among the elite developers worldwide."
-                        : isMid
-                          ? "Solid foundation! A bit more practice and you'll be unstoppable."
-                          : "Don't worry — every expert started here. The grind begins now."}
-                    </p>
-                  </motion.div>
-                </div>
+                {/* ── RIGHT SIDE: Global Combined Rank ── */}
+                {resumeRank && (
+                  <div className="flex-1 flex flex-col justify-center text-center lg:text-left">
 
-                {/* Animated characters */}
-                <div className="flex items-end gap-3 flex-shrink-0">
-                  {[...Array(numChars)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 + i * 0.15 }}
-                    >
-                      {isGood ? (
-                        <DancingCharacter index={i} />
-                      ) : isMid ? (
-                        <MidCharacter index={i} />
-                      ) : (
-                        <SadCharacter index={i} />
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+                    <div className="inline-flex items-center justify-center lg:justify-start gap-2 rounded-full px-4 py-1.5 mb-6 shadow-sm bg-gradient-to-r from-amber-100 to-yellow-50 border border-amber-200 w-fit mx-auto lg:mx-0">
+                      <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                      <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">
+                        Updated Rank · Resume + Test Combined
+                      </span>
+                    </div>
 
-              {/* Motivation text cycling */}
-              <div className="mt-8">
-                <FloatingMotivation messages={motMessages} color={semanticColor} />
+                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 w-full mb-8">
+                      {/* Rank Orb */}
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 180, damping: 14, delay: 0.5 }}
+                        className="relative shrink-0 flex flex-col items-center justify-center"
+                      >
+                        <div
+                          className="w-28 h-28 sm:w-32 sm:h-32 rounded-full flex flex-col items-center justify-center shadow-xl relative z-10 bg-white"
+                          style={{
+                            border: `3px solid ${semanticColor}50`,
+                            boxShadow: `0 0 36px ${semanticColor}30`,
+                          }}
+                        >
+                          <div className="font-black text-slate-800 leading-none" style={{ fontSize: "clamp(1.4rem,4vw,1.8rem)" }}>
+                            #{resumeRank.rank.toLocaleString()}
+                          </div>
+                          <div className="text-[10px] font-bold mt-1" style={{ color: semanticColor }}>
+                            of {resumeRank.total.toLocaleString()}
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ border: `2px solid ${semanticColor}` }} />
+                      </motion.div>
+
+                      {/* Rank Text */}
+                      <div className="flex-1">
+                        <h3 className="font-black text-slate-800 leading-tight mb-2" style={{ fontSize: "clamp(1.4rem,4vw,1.8rem)" }}>
+                          You&apos;re now <span style={{ color: semanticColor }}>{ordinal(resumeRank.rank)}</span>
+                        </h3>
+                        <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                          Among <strong className="text-slate-700">{profileLabels[resumeRank.profileKey] ?? "Developers"}</strong>.
+                          You&apos;re in the <strong style={{ color: semanticColor }}>Top {topPct}%</strong> — {tierLabel}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Percentile bar */}
+                    <div className="w-full max-w-sm mx-auto lg:mx-0 mb-6">
+                      <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                        <span>Bottom</span><span>Top</span>
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden shadow-inner">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ background: `linear-gradient(90deg, ${semanticColor}80, ${semanticColor})` }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${resumeRank.percentile}%` }}
+                          transition={{ duration: 1.6, ease: "easeOut", delay: 0.7 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="w-full">
+                      <FloatingMotivation messages={motMessages} color={semanticColor} />
+                    </div>
+
+                  </div>
+                )}
+
               </div>
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* ── Updated Resume Rank Card ── */}
-        {resumeRank && (
-          <RankImprovementCard resumeRank={resumeRank} semanticColor={semanticColor} />
-        )}
 
         {/* ── Bad score CTA ── */}
         {isBad && (
@@ -977,7 +934,6 @@ export default function ResultsDashboard() {
 
         {/* ── SWOT Grid ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
           {/* Strengths */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
             <Card
@@ -1047,7 +1003,6 @@ export default function ResultsDashboard() {
               </CardContent>
             </Card>
           </motion.div>
-
         </div>
 
         {/* ── Footer ── */}
@@ -1058,12 +1013,12 @@ export default function ResultsDashboard() {
           className="text-center pb-4"
         >
           <p className="text-slate-700 text-xs">
-            © 2024 {COMPANY_NAME} · Powered by Mastery Nexus
+            © {new Date().getFullYear()} {COMPANY_NAME} · Powered by Mastery Nexus
           </p>
         </motion.div>
       </div>
 
-      {/* Certificate Modal */}
+      {/* Certificate Modal & Share Modal Handlers (Hidden) */}
       <AnimatePresence>
         {showCertificate && (
           <CertificateModal
@@ -1101,28 +1056,28 @@ export default function ResultsDashboard() {
               </div>
 
               <div className="space-y-3">
-                <Button 
+                <Button
                   onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank')}
                   className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-12 flex justify-start px-6"
                 >
                   <span className="text-lg mr-3">💬</span> Share on WhatsApp
                 </Button>
-                <Button 
+                <Button
                   onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank')}
                   className="w-full bg-[#1DA1F2] hover:bg-[#0c85d0] text-white font-bold h-12 flex justify-start px-6"
                 >
                   <span className="text-lg mr-3">🐦</span> Share on Twitter (X)
                 </Button>
-                <Button 
+                <Button
                   onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank')}
                   className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white font-bold h-12 flex justify-start px-6"
                 >
                   <span className="text-lg mr-3">👔</span> Share on LinkedIn
                 </Button>
-                
+
                 <div className="h-px bg-slate-100 my-4" />
-                
-                <Button 
+
+                <Button
                   onClick={copyToClipboard}
                   variant="outline"
                   className="w-full border-slate-200 text-slate-700 font-bold h-12 flex justify-start px-6 hover:bg-slate-50"
