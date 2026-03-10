@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Share2, X } from "lucide-react";
+import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Share2, X, TrendingUp, AlertCircle, Lightbulb } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import {
     RadarChart,
@@ -28,6 +28,13 @@ interface ResumeScoreParameter {
 interface AIReport {
     total_score: number;
     parameters: ResumeScoreParameter[];
+    recruiter_report?: {
+        strengths: string[];
+        weaknesses: string[];
+        risk_flags: string[];
+        skill_gaps: string[];
+        recommendation: string;
+    };
 }
 
 interface ResumeRank {
@@ -549,29 +556,62 @@ export default function AnalysisPage() {
                                 ))}
                             </div>
 
-                            {/* ── 4. Action Section ── */}
+                            {/* ── SKILL GAP DETECTION ── */}
+                            {report.recruiter_report?.skill_gaps && report.recruiter_report.skill_gaps.length > 0 && (
+                                <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+                                    className="mt-4 p-6 sm:p-8 rounded-3xl bg-amber-50/50 border border-amber-200 shadow-sm"
+                                >
+                                    <div className="flex items-center gap-3 mb-5">
+                                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+                                            <AlertCircle className="w-5 h-5 text-amber-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-disp text-slate-800 font-extrabold text-lg">Skill Gap Detection</h3>
+                                            <p className="text-sm text-slate-500 font-medium">Critical missing elements for top-tier roles</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {report.recruiter_report.skill_gaps.map((gap, i) => (
+                                            <div key={i} className="flex gap-3 bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
+                                                <Lightbulb className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                                                <p className="text-sm font-medium text-slate-700 leading-snug">{gap}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* ── 4. Action Section (Improve Rank Card) ── */}
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-                                className="mt-8 rounded-3xl p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+                                className="mt-8 rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative flex flex-col sm:flex-row items-center justify-between"
                             >
-                                <div>
-                                    <h4 className="font-disp text-slate-800 font-extrabold text-lg sm:text-xl mb-1.5">Want a better rank? 🎯</h4>
-                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">Take the skill test to prove your abilities and improve your standing among {profileLabels[resumeRank?.profileKey ?? "general"] ?? "Developers"}.</p>
+                                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-500 to-indigo-600" />
+                                <div className="p-6 sm:p-10 flex-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full mb-3 border border-blue-100">
+                                        <TrendingUp className="w-4 h-4 text-blue-600" />
+                                        <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Level Up</span>
+                                    </div>
+                                    <h4 className="font-disp text-slate-800 font-extrabold text-2xl mb-2">Improve Your Rank 📈</h4>
+                                    <p className="text-slate-500 text-base leading-relaxed font-medium max-w-2xl">
+                                        Your rank isn't permanent! Take a specialized technical test to prove your hands-on abilities. 
+                                        A strong performance will instantly boost your standing among <span className="text-slate-700 font-bold">{profileLabels[resumeRank?.profileKey ?? "general"] ?? "Developers"}</span>.
+                                    </p>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                                <div className="p-6 sm:p-10 shrink-0 flex flex-col items-center justify-center bg-slate-50 sm:bg-transparent w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-slate-100">
+                                    <button onClick={() => router.push(`/test/${id}`)}
+                                        className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-disp font-bold text-base shadow-xl shadow-slate-200 hover:-translate-y-1 transition-all">
+                                        <Target className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                                        Start Technical Test
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform opacity-70" />
+                                    </button>
                                     <button onClick={() => {
                                         setUploadStatus("idle");
                                         router.push("/");
                                     }}
-                                        className="px-6 py-3.5 rounded-full border border-slate-200 bg-white text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm">
-                                        Upload Another
-                                    </button>
-
-                                    <button onClick={() => router.push(`/test/${id}`)}
-                                        className="group flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-disp font-bold text-sm shadow-lg shadow-emerald-200 hover:-translate-y-0.5 hover:shadow-emerald-300 transition-all">
-                                        <Target className="w-4 h-4" />
-                                        Start Technical Test
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        className="mt-4 text-sm font-bold text-slate-500 hover:text-slate-700 underline underline-offset-4 decoration-slate-200 hover:decoration-slate-400 transition-all">
+                                        Upload another resume instead
                                     </button>
                                 </div>
                             </motion.div>

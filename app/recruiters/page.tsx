@@ -88,7 +88,12 @@ export default function RecruitersPage() {
       try {
         const { data } = await axios.post(`${API_URL}/analysis/batch/status`, { jobIds: jobs });
         
-        const completed = data.statuses.filter((s: any) => s.state === "completed" || s.state === "failed");
+        // Because jobs are configured with { removeOnComplete: true, removeOnFail: true }, 
+        // they get deleted from Redis once done, resulting in state === "not-found".
+        // We consider "completed", "failed", and "not-found" as finished.
+        const completed = data.statuses.filter((s: any) => 
+          s.state === "completed" || s.state === "failed" || s.state === "not-found"
+        );
         const progressPct = 50 + Math.round((completed.length / jobs.length) * 50);
         setProgress(progressPct);
 
