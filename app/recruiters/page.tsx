@@ -40,18 +40,26 @@ export default function RecruitersPage() {
     setStatus("uploading");
     
     try {
-      // 1. Upload all files to get Assessment IDs
-      const assessmentIds = [];
-      for (let i = 0; i < files.length; i++) {
-        const formData = new FormData();
-        formData.append("resume", files[i]);
+      // 1. Upload files in concurrent chunks
+      const assessmentIds: string[] = [];
+      const CHUNK_SIZE = 20; // 20 concurrent uploads to prevent browser timeout
+      
+      for (let i = 0; i < files.length; i += CHUNK_SIZE) {
+        const chunk = files.slice(i, i + CHUNK_SIZE);
         
-        setProgress(Math.round(((i) / files.length) * 50)); // First 50% is uploading
-        
-        const { data } = await axios.post(`${API_URL}/upload`, formData, {
-          headers: { "x-session-id": sessionId || "" },
+        const chunkPromises = chunk.map(async (file) => {
+          const formData = new FormData();
+          formData.append("resume", file);
+          const { data } = await axios.post(`${API_URL}/upload`, formData, {
+            headers: { "x-session-id": sessionId || "" },
+          });
+          return data.assessmentId as string;
         });
-        assessmentIds.push(data.assessmentId);
+
+        const chunkIds = await Promise.all(chunkPromises);
+        assessmentIds.push(...chunkIds);
+        
+        setProgress(Math.round(((i + chunk.length) / files.length) * 50)); // First 50% is uploading
       }
 
       // 2. Submit to Batch Analysis API
