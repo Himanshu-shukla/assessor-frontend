@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Share2, X, TrendingUp, AlertCircle, Lightbulb } from "lucide-react";
+import { Loader2, ArrowLeft, RefreshCw, Sparkles, Target, ArrowRight, Share2, X, TrendingUp, AlertCircle, Lightbulb, MapPin, Banknote, Timer, Compass, ArrowUpRight } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import {
     RadarChart,
@@ -32,7 +32,30 @@ interface AIReport {
         strengths: string[];
         weaknesses: string[];
         risk_flags: string[];
-        skill_gaps: string[];
+        career_trajectory?: {
+            skill_gaps: string[];
+            career_paths?: {
+                role: string;
+                salary: string;
+            }[];
+            rejection_simulation?: {
+                rejection_time_seconds: number;
+                rejection_reasons: string[];
+            };
+            salary_growth_prediction?: {
+                current_expected_3yr: string;
+                target_expected_3yr: string;
+                skills_to_learn: string[];
+            };
+            strategic_career_guidance?: {
+                current_path_growth_probability: number;
+                better_paths: {
+                    current_role: string;
+                    target_role: string;
+                    salary_growth_percentage: number;
+                }[];
+            };
+        };
         recommendation: string;
     };
 }
@@ -172,11 +195,11 @@ function RankCard({ resumeRank, color, messages }: { resumeRank: ResumeRank; col
     };
 
     const tierLabel =
-        topPct <= 5  ? "🏆 Elite Tier" :
-        topPct <= 15 ? "🔥 Top Performer" :
-        topPct <= 35 ? "📈 Above Average" :
-        topPct <= 65 ? "💪 Solid Candidate" :
-                       "💡 Rising Talent";
+        topPct <= 5 ? "🏆 Elite Tier" :
+            topPct <= 15 ? "🔥 Top Performer" :
+                topPct <= 35 ? "📈 Above Average" :
+                    topPct <= 65 ? "💪 Solid Candidate" :
+                        "💡 Rising Talent";
 
     return (
         <div className="p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-center h-full gap-8 lg:gap-10 text-center lg:text-left mt-4 sm:mt-0">
@@ -556,28 +579,238 @@ export default function AnalysisPage() {
                                 ))}
                             </div>
 
-                            {/* ── SKILL GAP DETECTION ── */}
-                            {report.recruiter_report?.skill_gaps && report.recruiter_report.skill_gaps.length > 0 && (
+                            {/* ── COMPOSITE CAREER INSIGHTS ── */}
+                            {(report.recruiter_report?.career_trajectory) && (
                                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-                                    className="mt-4 p-6 sm:p-8 rounded-3xl bg-amber-50/50 border border-amber-200 shadow-sm"
+                                    className="mt-8 p-6 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col gap-6"
                                 >
-                                    <div className="flex items-center gap-3 mb-5">
-                                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
-                                            <AlertCircle className="w-5 h-5 text-amber-600" />
+                                    <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-2">
+                                        <div className="p-2.5 rounded-xl bg-slate-900 shadow-inner">
+                                            <Sparkles className="w-6 h-6 text-yellow-400" />
                                         </div>
                                         <div>
-                                            <h3 className="font-disp text-slate-800 font-extrabold text-lg">Skill Gap Detection</h3>
-                                            <p className="text-sm text-slate-500 font-medium">Critical missing elements for top-tier roles</p>
+                                            <h2 className="font-disp text-slate-800 font-black text-2xl">Career Insights & Trajectory</h2>
+                                            <p className="text-sm text-slate-500 font-medium">Holistic AI analysis of your professional future</p>
                                         </div>
                                     </div>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {report.recruiter_report.skill_gaps.map((gap, i) => (
-                                            <div key={i} className="flex gap-3 bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
-                                                <Lightbulb className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                                                <p className="text-sm font-medium text-slate-700 leading-snug">{gap}</p>
+
+                                    <div className="flex flex-col gap-6">
+                                        {/* ── SKILL GAP DETECTION ── */}
+                                        {report.recruiter_report.career_trajectory.skill_gaps && report.recruiter_report.career_trajectory.skill_gaps.length > 0 && (
+                                            <div className="p-6 sm:p-8 rounded-2xl bg-amber-50/50 border border-amber-200 shadow-sm relative overflow-hidden">
+                                                <div className="flex items-center gap-3 mb-5 relative z-10">
+                                                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+                                                        <AlertCircle className="w-5 h-5 text-amber-600" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-disp text-slate-800 font-extrabold text-lg">Skill Gap Detection</h3>
+                                                        <p className="text-sm text-slate-500 font-medium">Critical missing elements for top-tier roles</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+                                                    {report.recruiter_report.career_trajectory.skill_gaps.map((gap: string, i: number) => (
+                                                        <div key={i} className="flex gap-3 bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
+                                                            <Lightbulb className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                                                            <p className="text-sm font-medium text-slate-700 leading-snug">{gap}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        ))}
+                                        )}
+
+                                        {/* ── CAREER PATH PREDICTION ── */}
+                                        {report.recruiter_report.career_trajectory?.career_paths && report.recruiter_report.career_trajectory.career_paths.length > 0 && (
+                                            <div className="p-6 sm:p-8 rounded-2xl bg-blue-50/50 border border-blue-200 shadow-sm relative overflow-hidden">
+                                                <div className="flex items-center gap-3 mb-5 relative z-10">
+                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border border-blue-200">
+                                                        <MapPin className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-disp text-slate-800 font-extrabold text-lg">Career Path Prediction</h3>
+                                                        <p className="text-sm text-slate-500 font-medium">Best career moves and median salary estimates</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+                                                    {report.recruiter_report.career_trajectory.career_paths.map((path: { role: string; salary: string; }, i: number) => (
+                                                        <div key={i} className="flex flex-col bg-white p-5 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center font-bold text-xs text-blue-600 shrink-0">
+                                                                    {i + 1}
+                                                                </div>
+                                                                <h4 className="font-bold text-slate-800 text-sm leading-tight">{path.role}</h4>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 mt-auto text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 self-start">
+                                                                <Banknote className="w-3.5 h-3.5" />
+                                                                Median: {path.salary}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* ── JOB REJECTION SIMULATOR ── */}
+                                        {report.recruiter_report.career_trajectory?.rejection_simulation && (
+                                            <div className="p-6 sm:p-8 rounded-2xl bg-rose-50/50 border border-rose-200 shadow-sm relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+
+                                                <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-3 mb-2">
+                                                            <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center border border-rose-200 shadow-inner">
+                                                                <Timer className="w-5 h-5 text-rose-600" />
+                                                            </div>
+                                                            <h3 className="font-disp text-slate-800 font-extrabold text-xl">Job Rejection Simulator</h3>
+                                                        </div>
+                                                        <p className="text-sm text-slate-500 font-medium mb-6">How an overworked recruiter sees your resume:</p>
+
+                                                        <div className="space-y-3">
+                                                            <div className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Reasons for Rejection:</div>
+                                                            {report.recruiter_report.career_trajectory.rejection_simulation.rejection_reasons.map((reason: string, i: number) => (
+                                                                <div key={i} className="flex items-start gap-3">
+                                                                    <div className="mt-0.5 rounded-full bg-rose-100 p-1 shrink-0">
+                                                                        <X className="w-3 h-3 text-rose-600 stroke-[3]" />
+                                                                    </div>
+                                                                    <span className="text-sm text-slate-600 font-medium leading-tight">{reason}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="w-full md:w-auto shrink-0 flex flex-col items-center justify-center bg-white rounded-2xl p-6 border border-rose-100 shadow-sm relative shrink-0 min-w-[180px]">
+                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-center">Likely Rejected In</div>
+                                                        <div className="text-4xl sm:text-5xl font-black text-rose-500 tracking-tighter tabular-nums drop-shadow-sm">
+                                                            {report.recruiter_report.career_trajectory.rejection_simulation.rejection_time_seconds}s
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 font-medium mt-2 text-center max-w-[140px]">
+                                                            Avg human review time is 7.4s. Make your impact faster!
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* ── SALARY GROWTH PREDICTION ── */}
+                                        {report.recruiter_report.career_trajectory?.salary_growth_prediction && (
+                                            <div className="p-6 sm:p-8 rounded-2xl bg-emerald-50/50 border border-emerald-200 shadow-sm relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+
+                                                <div className="flex items-center gap-3 mb-6 relative z-10">
+                                                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-200 shadow-inner">
+                                                        <TrendingUp className="w-5 h-5 text-emerald-600" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-disp text-slate-800 font-extrabold text-xl">Salary Growth Prediction</h3>
+                                                        <p className="text-sm text-slate-500 font-medium">Your 3-year earning potential</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col md:flex-row gap-6 items-stretch relative z-10">
+
+                                                    <div className="flex-1 bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm flex flex-col justify-center">
+                                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Current Trajectory</div>
+                                                        <div className="text-2xl sm:text-3xl font-black text-slate-700 tracking-tight">
+                                                            {report.recruiter_report.career_trajectory.salary_growth_prediction.current_expected_3yr}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 font-medium mt-1">Expected salary in 3 years</p>
+                                                    </div>
+
+                                                    <div className="hidden md:flex items-center justify-center -mx-2 z-10">
+                                                        <div className="w-8 h-8 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center shadow-sm">
+                                                            <ArrowRight className="w-4 h-4 text-emerald-600" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex-1 bg-emerald-600 rounded-2xl p-5 border border-emerald-500 shadow-md shadow-emerald-200 flex flex-col justify-center text-white relative overflow-hidden">
+                                                        <div className="absolute -right-4 -top-4 opacity-10">
+                                                            <TrendingUp className="w-24 h-24" />
+                                                        </div>
+                                                        <div className="text-xs font-bold text-emerald-200 uppercase tracking-widest mb-1 relative z-10">Accelerated Path</div>
+                                                        <div className="text-2xl sm:text-3xl font-black text-white tracking-tight relative z-10">
+                                                            {report.recruiter_report.career_trajectory.salary_growth_prediction.target_expected_3yr}
+                                                        </div>
+                                                        <p className="text-xs text-emerald-100 font-medium mt-1 relative z-10">If you upskill</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-6 pt-5 border-t border-emerald-100/60 relative z-10">
+                                                    <div className="text-sm font-bold text-slate-700 mb-3">Skills to learn to unlock <span className="text-emerald-700">{report.recruiter_report.career_trajectory.salary_growth_prediction.target_expected_3yr}</span>:</div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {report.recruiter_report.career_trajectory.salary_growth_prediction.skills_to_learn.map((skill: string, i: number) => (
+                                                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-emerald-200 shadow-sm">
+                                                                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                                                                <span className="text-sm font-bold text-slate-700">{skill}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* ── STRATEGIC CAREER GUIDANCE ── */}
+                                        {report.recruiter_report.career_trajectory?.strategic_career_guidance && (
+                                            <div className="p-6 sm:p-8 rounded-2xl bg-indigo-50/50 border border-indigo-200 shadow-sm relative overflow-hidden">
+                                                <div className="flex items-center gap-3 mb-6 relative z-10">
+                                                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 shadow-inner shrink-0">
+                                                        <Compass className="w-5 h-5 text-indigo-600" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-disp text-slate-800 font-extrabold text-xl">Strategic Career Guidance</h3>
+                                                        <p className="text-sm text-slate-500 font-medium">Data-driven trajectory analysis</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                                                    {/* Probability Block */}
+                                                    <div className="bg-white rounded-2xl p-6 border border-indigo-100 shadow-sm flex flex-col items-center justify-center text-center">
+                                                        <div className="text-sm font-bold text-slate-500 mb-2">Current Path Growth Probability</div>
+                                                        <div className="flex items-baseline gap-1">
+                                                            <span className="text-4xl font-black text-indigo-600 tracking-tighter">
+                                                                {report.recruiter_report.career_trajectory.strategic_career_guidance.current_path_growth_probability}
+                                                            </span>
+                                                            <span className="text-xl font-bold text-indigo-400">%</span>
+                                                        </div>
+                                                        <div className="w-full h-1.5 bg-slate-100 rounded-full mt-4 overflow-hidden">
+                                                            <div
+                                                                className="h-full bg-indigo-500 rounded-full"
+                                                                style={{ width: `${report.recruiter_report.career_trajectory.strategic_career_guidance.current_path_growth_probability}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Better Paths List */}
+                                                    <div className="lg:col-span-2 space-y-3">
+                                                        <div className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Better paths based on your profile:</div>
+                                                        {report.recruiter_report.career_trajectory.strategic_career_guidance.better_paths.map((path: { current_role: string; target_role: string; salary_growth_percentage: number; }, i: number) => (
+                                                            <div key={i} className="bg-white rounded-2xl p-4 sm:p-5 border border-indigo-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-indigo-200 transition-colors">
+
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
+                                                                        {i + 1}
+                                                                    </div>
+                                                                    <div className="flex flex-wrap items-center gap-2">
+                                                                        <span className="text-sm font-medium text-slate-500">{path.current_role}</span>
+                                                                        <ArrowRight className="w-4 h-4 text-slate-300 shrink-0" />
+                                                                        <span className="text-sm font-bold text-slate-800">{path.target_role}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex flex-col sm:items-end shrink-0 pl-10 sm:pl-0">
+                                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Est. Salary Growth</div>
+                                                                    <div className="inline-flex items-center gap-1 text-emerald-600 font-extrabold text-base bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                                                                        <ArrowUpRight className="w-4 h-4" />
+                                                                        +{path.salary_growth_percentage}%
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
@@ -594,7 +827,7 @@ export default function AnalysisPage() {
                                     </div>
                                     <h4 className="font-disp text-slate-800 font-extrabold text-2xl mb-2">Improve Your Rank 📈</h4>
                                     <p className="text-slate-500 text-base leading-relaxed font-medium max-w-2xl">
-                                        Your rank isn't permanent! Take a specialized technical test to prove your hands-on abilities. 
+                                        Your rank isn't permanent! Take a specialized technical test to prove your hands-on abilities.
                                         A strong performance will instantly boost your standing among <span className="text-slate-700 font-bold">{profileLabels[resumeRank?.profileKey ?? "general"] ?? "Developers"}</span>.
                                     </p>
                                 </div>
@@ -647,28 +880,28 @@ export default function AnalysisPage() {
                             </div>
 
                             <div className="space-y-3">
-                                <Button 
+                                <Button
                                     onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(rankText + ' ' + shareUrl)}`, '_blank')}
                                     className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-12 flex justify-start px-6"
                                 >
                                     <span className="text-lg mr-3">💬</span> Share on WhatsApp
                                 </Button>
-                                <Button 
+                                <Button
                                     onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(rankText)}&url=${encodeURIComponent(shareUrl)}`, '_blank')}
                                     className="w-full bg-[#1DA1F2] hover:bg-[#0c85d0] text-white font-bold h-12 flex justify-start px-6"
                                 >
                                     <span className="text-lg mr-3">🐦</span> Share on Twitter (X)
                                 </Button>
-                                <Button 
+                                <Button
                                     onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank')}
                                     className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white font-bold h-12 flex justify-start px-6"
                                 >
                                     <span className="text-lg mr-3">👔</span> Share on LinkedIn
                                 </Button>
-                                
+
                                 <div className="h-px bg-slate-100 my-4" />
-                                
-                                <Button 
+
+                                <Button
                                     onClick={copyToClipboard}
                                     variant="outline"
                                     className="w-full border-slate-200 text-slate-700 font-bold h-12 flex justify-start px-6 hover:bg-slate-50"
